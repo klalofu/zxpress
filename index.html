@@ -15,73 +15,75 @@
     <canvas id="canvas"></canvas>
 
 
-    <script>
+<script>
     var Module = {
         canvas: document.getElementById('canvas'),
 
-        // !!! ДОБАВЛЯЕМ ЭТУ ФУНКЦИЮ. Эмулятор требует её для запуска. !!!
         onReady: function() {
-            console.log("Эмулятор запущен (onReady вызван)");
-            // Если хотите, здесь можно скрыть надпись "Инициализация",
-            // но лучше оставить это для onRuntimeInitialized
+            console.log("Эмулятор готов!");
         },
 
-        // Указываем, где лежат файлы (чтобы гарантированно находил их в корне)
         locateFile: function(filename) {
             return filename;
         },
 
-        // Стандартный коллбэк Emscripten (когда всё полностью проинициализировано)
         onRuntimeInitialized: function() {
             document.getElementById('status').innerText = "Эмулятор готов!";
         },
 
-        // preRun - функции, которые выполняются ДО запуска C++ кода
         preRun: [
             function() {
                 const params = new URLSearchParams(window.location.search);
                 const gameName = params.get('game');
-                
+
                 if (gameName) {
                     document.getElementById('status').innerText = "Загрузка " + gameName + "...";
-                    
-                    // var gameUrl = gameName; 
-                    // Если вы кладете игры в папку games, раскомментируйте строку ниже:
+
+                    // 1. Говорим эмулятору: "Стоп, не запускай main(), пока я не скажу"
+                    Module.addRunDependency('game-download');
+
                     var gameUrl = 'games/' + gameName;
 
                     var xhr = new XMLHttpRequest();
                     xhr.open('GET', gameUrl, true);
                     xhr.responseType = 'arraybuffer';
-                    
+
                     xhr.onload = function() {
                         if (xhr.status === 200) {
                             var data = new Uint8Array(xhr.response);
-                            
-                            // Создаем файл в корне виртуальной файловой системы
+
+                            // Создаем файл в корне файловой системы
                             Module.FS_createDataFile('/', gameName, data, true, true, true);
-                            
-                            // Передаем файл как аргумент запуска (как в консоли: usp game.trd)
+
+                            // Передаем аргументы (как будто запустили: usp game.trd)
                             Module.arguments = [gameName];
-                            
-                            document.getElementById('status').innerText = "Игра загружена!";
+
+                            document.getElementById('status').innerText = "Файл получен, запуск эмулятора...";
+
+                            // 2. Говорим эмулятору: "Всё, можно запускаться!"
+                            Module.removeRunDependency('game-download');
                         } else {
-                            document.getElementById('status').innerText = "Ошибка: Файл " + gameName + " не найден (код " + xhr.status + ")";
+                            document.getElementById('status').innerText = "Ошибка 404: Файл не найден.";
+                            // Если ошибка, тоже снимаем блокировку, иначе эмулятор зависнет навсегда
+                            Module.removeRunDependency('game-download');
                         }
                     };
-                    
+
                     xhr.onerror = function() {
-                        document.getElementById('status').innerText = "Ошибка сети при загрузке игры.";
+                        document.getElementById('status').innerText = "Ошибка сети.";
+                        Module.removeRunDependency('game-download');
                     };
-                    
+
                     xhr.send(null);
                 } else {
-                    document.getElementById('status').innerText = "Запуск без игры. Добавьте ?game=имя_файла в ссылку.";
-                    Module.arguments = [];
+                    // Если игры нет, снимаем блокировку сразу, чтобы эмулятор просто запустился
+                    document.getElementById('status').innerText = "Игра не выбрана. Жду...";
                 }
             }
         ]
     };
 </script>
+
 <script src="unreal_speccy_portable.js"></script>
 
 </body
