@@ -89,9 +89,16 @@
         height: 12%;
     }
     .second-row {
-        top: 40%;
+        top: 30%;
         left: 19%;
+        display: flex;
+        position: relative;
+        height: 34%;
     }
+    .second-row:first{
+        left: 30%;
+    }
+    
     /* Если хотите совсем прозрачные кнопки (невидимые), уберите background-color выше */
         /* Специальные цвета для модификаторов */
         .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
@@ -110,7 +117,7 @@
     <canvas id="canvas"></canvas>
     <div id="vk-container">
         <div class="second-row">
-            <div class="vk-btn vk-skin-btn" data-key="q">
+            <div class="vk-btn vk-skin-btn second-row" data-key="q">
                 Q
             </div>
             <div class="vk-btn vk-skin-btn" data-key="q">
