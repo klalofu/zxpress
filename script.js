@@ -42,30 +42,43 @@ document.addEventListener('DOMContentLoaded', loadGallery);
 
 // --- 2. НАСТРОЙКА ЭМУЛЯТОРА ---
 
+// Считываем URL (делаем это здесь, чтобы проверить до запуска)
+const params = new URLSearchParams(window.location.search);
+let gameName = params.get('game');
+
 var Module = {
     canvas: document.getElementById('canvas'),
     onReady: function() {
         console.log("USP Ready");
         
-        // Скрываем галерею, показываем канвас и клавиатуру
-        document.querySelector('.page-header').style.display = 'none';
-        document.getElementById('gallery-container').style.display = 'none';
-        document.getElementById('vk-container').style.display = 'block';
-        document.getElementById('canvas').style.display = 'block';
+        // ПРОВЕРКА: Загружаем игру или просто листаем?
+        if (gameName) {
+            // Если в URL есть параметр ?game=...
+            // Скрываем меню, показываем эмулятор и клавиатуру
+            document.querySelector('.page-header').style.display = 'none';
+            document.getElementById('gallery-container').style.display = 'none';
+            document.getElementById('vk-container').style.display = 'block';
+            document.getElementById('canvas').style.display = 'block';
+            
+            // Фокусируемся на канвасе, чтобы работали кнопки
+            Module.canvas.focus();
+        } else {
+            // Если игры нет (просто index.html)
+            // Показываем меню и галерею, прячем эмулятор
+            document.querySelector('.page-header').style.display = 'block';
+            document.getElementById('gallery-container').style.display = 'grid'; // или 'block'
+            document.getElementById('vk-container').style.display = 'none';
+            document.getElementById('canvas').style.display = 'none';
+        }
     },
     locateFile: function(filename) {
         return filename;
     }
 };
 
-const params = new URLSearchParams(window.location.search);
-let gameName = params.get('game');
-
-// Если игры нет в URL, возвращаем галерею при запуске (для F5)
+// Обработка нажатия "Назад" в браузере (если вдруг SPA)
 window.addEventListener('popstate', () => {
-    if (!params.get('game')) {
-        location.reload();
-    }
+    location.reload(); // Простейший способ: перезагрузить страницу
 });
 
 if (gameName) {

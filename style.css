@@ -207,3 +207,8 @@ body {
 #canvas, #vk-container {
     display: none; 
 }
+
+/* Галерея видна по умолчанию */
+#gallery-container {
+    display: grid; 
+}
