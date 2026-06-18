@@ -16,14 +16,12 @@
             font-family: sans-serif; 
             overflow: hidden; 
         }
-        
         canvas { 
             box-shadow: 0 0 20px rgba(0,0,0,0.5); 
             background: #000; 
             max-width: 100%; 
             max-height: 90vh; 
         }
-
         #start-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -35,7 +33,6 @@
             z-index: 999;
             cursor: pointer;
         }
-
         #start-btn {
             border: 2px solid #fff;
             color: #fff;
@@ -45,7 +42,6 @@
             background: transparent;
         }
         #start-btn:hover { background: #fff; color: #000; }
-        
         #status { margin-bottom: 10px; pointer-events: none; z-index: 10;}
     </style>
 </head>
@@ -59,110 +55,110 @@
 
     <canvas id="canvas"></canvas>
 
+    <!-- ШАГ 1: Настраиваем Module ДО загрузки скрипта эмулятора -->
     <script>
         var Module = {
             canvas: document.getElementById('canvas'),
-
             onReady: function() {
-                console.log("USP: onReady");
+                console.log("USP Ready");
             },
-
             locateFile: function(filename) {
                 return filename;
-            },
-
-            onRuntimeInitialized: function() {
-                document.getElementById('status').innerText = "Готов. Жмите кнопку.";
-            },
-
-            preRun: [
-                function() {
-                    const params = new URLSearchParams(window.location.search);
-                    let gameName = params.get('game');
-
-                    if (gameName) {
-                        gameName = gameName.toLowerCase();
-                        document.getElementById('status').innerText = "Загрузка " + gameName + "...";
-
-                        Module.addRunDependency('game-download');
-
-                        // Если игры в папке games:
-                        var gameUrl = 'games/' + gameName;
-                        
-
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', gameUrl, true);
-                        xhr.responseType = 'arraybuffer';
-
-                        xhr.onload = function() {
-                            if (xhr.status === 200) {
-                                var data = new Uint8Array(xhr.response);
-                                
-                                // Создаем файл
-                                Module.FS_createDataFile('/', gameName, data, true, true, true);
-
-                                // Передаем аргументы (пробуем с точкой, может быть важно для некоторых сборок)
-                                Module.arguments = ['./' + gameName];
-
-                                console.log("Файл: " + gameName + " загружен. Аргументы:", Module.arguments);
-                                
-                                document.getElementById('status').innerText = "Игра в памяти. Запуск...";
-                                Module.removeRunDependency('game-download');
-                            } else {
-                                document.getElementById('status').innerText = "Ошибка 404";
-                                Module.removeRunDependency('game-download');
-                            }
-                        };
-                        xhr.onerror = function() {
-                            document.getElementById('status').innerText = "Ошибка сети";
-                            Module.removeRunDependency('game-download');
-                        };
-                        xhr.send(null);
-                    } else {
-                        console.log("Игра не указана");
-                        Module.arguments = [];
-                    }
-                }
-            ]
+            }
         };
 
-        // Функция для эмуляции нажатия клавиши F5 (Reset)
-        function pressF5() {
-            var canvas = Module.canvas;
-            var code = 116; // KeyCode для F5
+        // Сразу читаем URL и передаем аргументы
+        const params = new URLSearchParams(window.location.search);
+        let gameName = params.get('game');
 
-            var evtDown = new KeyboardEvent("keydown", {
-                bubbles: true, cancelable: true, keyCode: code, which: code, key: "F5"
-            });
-            var evtUp = new KeyboardEvent("keyup", {
-                bubbles: true, cancelable: true, keyCode: code, which: code, key: "F5"
-            });
+        if (gameName) {
+            gameName = gameName.toLowerCase();
+            console.log("Игра из URL:", gameName);
             
-            canvas.dispatchEvent(evtDown);
-            setTimeout(() => canvas.dispatchEvent(evtUp), 50);
-            console.log("Нажата клавиша F5 (Reset)");
+            // !!! ВАЖНО: Задаем аргументы СРАЗУ ЖЕ. 
+            // Эмулятор прочитает их, когда скрипт загрузится ниже.
+            // Используем относительный путь ./ , так как USP на это рассчитывает
+            Module.arguments = ['./' + gameName];
+        } else {
+            Module.arguments = [];
+        }
+    </script>
+
+    <!-- ШАГ 2: Загружаем эмулятор. 
+         Он сейчас прочитает Module.arguments и запомнит их. -->
+    <script src="unreal_speccy_portable.js"></script>
+
+    <!-- ШАГ 3: Добавляем логику скачивания файла в preRun -->
+    <script>
+        if (gameName) {
+            // Добавляем нашу функцию в массив preRun
+            // Эмулятор выполнит её перед запуском main()
+            Module.preRun.push(function() {
+                console.log("PreRun: Начинаю скачивание файла...");
+
+                // Останавливаем запуск, пока файл не скачается
+                Module.addRunDependency('game-download');
+
+                // Путь к файлу (если в папке games - добавьте префикс)
+                var gameUrl = 'games/' + gameName;
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', gameUrl, true);
+                xhr.responseType = 'arraybuffer';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var data = new Uint8Array(xhr.response);
+                        
+                        // Создаем файл в корневой директории
+                        Module.FS_createDataFile('/', gameName, data, true, true, true);
+                        
+                        console.log("PreRun: Файл успешно создан в FS");
+                        
+                        // Снимаем блокировку. Эмулятор запустится.
+                        Module.removeRunDependency('game-download');
+                    } else {
+                        console.error("PreRun: Ошибка 404");
+                        // Чтобы не зависнуть, снимаем блокировку и при этом очистим аргументы, чтобы не было краша
+                        Module.arguments = []; 
+                        Module.removeRunDependency('game-download');
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error("PreRun: Ошибка сети");
+                    Module.arguments = [];
+                    Module.removeRunDependency('game-download');
+                };
+
+                xhr.send(null);
+            });
         }
 
+        // Обработчик кнопки для звука
         var overlay = document.getElementById('start-overlay');
-        
         overlay.addEventListener('click', function() {
             overlay.style.display = 'none';
             document.getElementById('status').style.display = 'none';
 
-            // Размораживаем звук (на всякий случай)
+            // Разморозка аудио
             if (Module.SDL2 && Module.SDL2.audioContext && Module.SDL2.audioContext.state === 'suspended') {
                 Module.SDL2.audioContext.resume();
             }
 
             Module.canvas.focus();
-            Module.canvas.setAttribute('tabindex', '1');
-
-            // !!! САМОЕ ГЛАВНОЕ: Ждем 500мс и нажимаем F5
-            setTimeout(pressF5, 500);
+            
+            // Автоматический Reset (F5) через 0.5 сек, если USP не перезагрузился сам
+            // (Иногда требуется, чтобы TR-DOS сработал)
+            setTimeout(function() {
+                var code = 116; // F5
+                var evtDown = new KeyboardEvent("keydown", { bubbles: true, keyCode: code, which: code, key: "F5" });
+                var evtUp = new KeyboardEvent("keyup", { bubbles: true, keyCode: code, which: code, key: "F5" });
+                Module.canvas.dispatchEvent(evtDown);
+                setTimeout(() => Module.canvas.dispatchEvent(evtUp), 50);
+            }, 500);
         });
     </script>
-
-    <script src="unreal_speccy_portable.js"></script>
 
 </body>
 </html>
