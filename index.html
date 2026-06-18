@@ -171,95 +171,104 @@
             Module.arguments = ['./' + gameName];
 
                 // --- Логика виртуальной клавиатуры ---
-            var activeModifiers = {
-                shift: false,
-                sym: false
-            };
+    // --- Логика виртуальной клавиатуры ---
 
-            function sendKey(keyCode, type, isModifier) {
-                if (!Module || !Module.canvas) return;
+    // Функция для правильного маппинга клавиш (a -> KeyA)
+    function getKeyCode(char) {
+        if (char.length === 1) {
+            if (char >= '0' && char <= '9') return 'Digit' + char;
+            if (char >= 'a' && char <= 'z') return 'Key' + char.toUpperCase();
+            if (char >= 'A' && char <= 'Z') return 'Key' + char;
+            if (char === '.') return 'Period';
+            if (char === ',') return 'Comma';
+            if (char === '-') return 'Minus';
+            if (char === '=') return 'Equal';
+        }
+        // Специальные клавиши
+        if (char === 'Enter') return 'Enter';
+        if (char === 'ShiftLeft') return 'ShiftLeft';
+        if (char === 'AltLeft') return 'AltLeft';
+        return char;
+    }
 
-                var event;
-                // Событие нужно именно на канвас, чтобы его поймал SDL
-                var target = Module.canvas;
+    function sendKey(keyCode, type) {
+        if (!Module || !Module.canvas) return;
 
-                if (type === 'down') {
-                    event = new KeyboardEvent("keydown", {
-                        bubbles: true, 
-                        cancelable: true, 
-                        key: keyCode, 
-                        code: keyCode,
-                        shiftKey: activeModifiers.shift,
-                        altKey: activeModifiers.sym
-                    });
-                    target.dispatchEvent(event);
-                } else if (type === 'up') {
-                    event = new KeyboardEvent("keyup", {
-                        bubbles: true, 
-                        cancelable: true, 
-                        key: keyCode, 
-                        code: keyCode,
-                        shiftKey: activeModifiers.shift,
-                        altKey: activeModifiers.sym
-                    });
-                    target.dispatchEvent(event);
+        // ГАВНО: Возвращаем фокус канвасу, чтобы эмулятор "услышал" событие
+        Module.canvas.focus();
+
+        var code = getKeyCode(keyCode);
+        
+        var eventInit = {
+            bubbles: true, 
+            cancelable: true, 
+            key: keyCode, 
+            code: code,
+            keyCode: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0, // Для совместимости
+            which: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0,
+            shiftKey: activeModifiers.shift,
+            altKey: activeModifiers.sym
+        };
+
+        var event;
+        if (type === 'down') {
+            event = new KeyboardEvent("keydown", eventInit);
+        } else if (type === 'up') {
+            event = new KeyboardEvent("keyup", eventInit);
+        }
+
+        // Отправляем событие в window, чтобы его поймал глобальный слушатель SDL
+        window.dispatchEvent(event);
+    }
+
+    var buttons = document.querySelectorAll('.vk-btn');
+    
+    buttons.forEach(function(btn) {
+        var key = btn.getAttribute('data-key');
+        var isModifier = (key === 'ShiftLeft' || key === 'AltLeft');
+
+        var pressHandler = function(e) {
+            e.preventDefault(); 
+            
+            if (isModifier) {
+                if (key === 'ShiftLeft') {
+                    activeModifiers.shift = !activeModifiers.shift;
+                    btn.classList.toggle('active', activeModifiers.shift);
+                    sendKey('ShiftLeft', activeModifiers.shift ? 'down' : 'up');
+                } else if (key === 'AltLeft') {
+                    activeModifiers.sym = !activeModifiers.sym;
+                    btn.classList.toggle('active', activeModifiers.sym);
+                    sendKey('AltLeft', activeModifiers.sym ? 'down' : 'up');
                 }
+            } else {
+                btn.classList.add('active');
+                sendKey(key, 'down');
             }
+        };
 
-            // Навешиваем обработчики на кнопки
-            var buttons = document.querySelectorAll('.vk-btn');
-            buttons.forEach(function(btn) {
-                var key = btn.getAttribute('data-key');
-                var isModifier = (key === 'ShiftLeft' || key === 'AltLeft');
+        var releaseHandler = function(e) {
+            e.preventDefault();
+            if (!isModifier) {
+                btn.classList.remove('active');
+                sendKey(key, 'up');
+            }
+        };
 
-                // Обработка нажатия (для мыши и тача)
-                var pressHandler = function(e) {
-                    e.preventDefault(); // Чтобы не было зума и выделения
-                    
-                    if (isModifier) {
-                        // Если это модификатор, переключаем его состояние
-                        if (key === 'ShiftLeft') {
-                            activeModifiers.shift = !activeModifiers.shift;
-                            btn.classList.toggle('active', activeModifiers.shift);
-                            sendKey('ShiftLeft', activeModifiers.shift ? 'down' : 'up', true);
-                        } else if (key === 'AltLeft') {
-                            activeModifiers.sym = !activeModifiers.sym;
-                            btn.classList.toggle('active', activeModifiers.sym);
-                            sendKey('AltLeft', activeModifiers.sym ? 'down' : 'up', true);
-                        }
-                    } else {
-                        // Обычная клавиша
-                        btn.classList.add('active');
-                        sendKey(key, 'down', false);
-                    }
-                };
+        // Для поддержки и мышки, и тача
+        btn.addEventListener('mousedown', pressHandler);
+        btn.addEventListener('touchstart', pressHandler, {passive: false});
 
-                // Обработка отпускания
-                var releaseHandler = function(e) {
-                    e.preventDefault();
-                    
-                    if (!isModifier) {
-                        btn.classList.remove('active');
-                        sendKey(key, 'up', false);
-                    }
-                    // Модификаторы сами по себе не "отпускаются" при тапе (как CapsLock), 
-                    // а переключаются. Поэтому здесь ничего не делаем.
-                };
+        btn.addEventListener('mouseup', releaseHandler);
+        btn.addEventListener('touchend', releaseHandler);
+        btn.addEventListener('mouseleave', releaseHandler);
+    });
 
-                btn.addEventListener('mousedown', pressHandler);
-                btn.addEventListener('touchstart', pressHandler, {passive: false});
-
-                btn.addEventListener('mouseup', releaseHandler);
-                btn.addEventListener('touchend', releaseHandler);
-                // На случай увода пальца/мыши с кнопки
-                btn.addEventListener('mouseleave', releaseHandler);
-            });
-
-            // Отдельная логика для RESET
-            document.getElementById('btn-reset').addEventListener('click', function() {
-                sendKey('F5', 'down', false);
-                setTimeout(function() { sendKey('F5', 'up', false); }, 50);
-            });
+    // Кнопка Reset
+    document.getElementById('btn-reset').addEventListener('click', function() {
+        Module.canvas.focus();
+        sendKey('F5', 'down');
+        setTimeout(function() { sendKey('F5', 'up'); }, 50);
+    });
         } else {
             Module.arguments = [];
         }
