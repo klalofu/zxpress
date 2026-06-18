@@ -1,0 +1,143 @@
+/* Основные стили страницы */
+body {
+    background: #111;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Элементы сверху вниз */
+    align-items: center;     /* По центру горизонтали */
+    justify-content: flex-start; /* Прижать к верху, но с отступом */
+    min-height: 100vh;
+    color: white;
+    font-family: sans-serif;
+    overflow: hidden; /* Чтобы не было скролла */
+    padding-top: 20px; /* Отступ сверху */
+    box-sizing: border-box;
+    gap: 20px; /* Отступ между канвасом и клавиатурой */
+}
+
+/* Канвас (экран) */
+#canvas {
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    background: #000;
+    max-width: 100%;
+    max-height: 60vh; /* Канвас занимает не больше 60% высоты */
+    width: 640px;    /* Базовая ширина */
+    height: 480px;
+    object-fit: contain;
+}
+
+/* Статус бар */
+#status {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #aaa;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Оверлей стартового экрана */
+#start-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    cursor: pointer;
+}
+
+#start-btn {
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 24px;
+    border-radius: 5px;
+    background: transparent;
+}
+
+#start-btn:hover { background: #fff; color: #000; }
+
+
+    #vk-container {
+        position: relative;
+        width: 100%; /* Растягивается на ширину экрана */
+        max-width: 1920px; /* Но не шире оригинала (поставьте вашу ширину картинки) */
+        
+        /* ВАЖНО: Сохраняем пропорции картинки, чтобы кнопки не поехали */
+        aspect-ratio: 1000 / 400; /* (Ширина картинки / Высота картинки) */
+        
+        background-image: url('keyboard.jpg'); /* Путь к вашему файлу */
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        
+        height: 50vh;
+        user-select: none;
+        touch-action: manipulation;
+        box-sizing: border-box;
+    }
+    /* Стиль кнопок для скина */
+    .vk-skin-btn {
+        position: absolute;
+        
+        /* Делаем кнопки полупрозрачными, чтобы видеть картинку */
+        background-color: rgba(255, 255, 255, 0.1); 
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: transparent; /* Текст скрыт, видна только подложка */
+        
+        /* Центрируем текст внутри кнопки, если захотите его видеть */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    /* Эффект нажатия */
+    .vk-skin-btn:active, .vk-skin-btn.active {
+        background-color: rgba(255, 255, 255, 0.5); /* Ярче при нажатии */
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .vk-btn {
+        width: 5.4%;
+        height: 100%;
+        display: flex;
+        position: relative;
+        margin-right: 3.5%;
+    }
+    .first-row {
+        top: 42%;
+        left: 4%;
+        display: flex;
+        position: relative;
+        height: 12%;
+    }
+    .second-row {
+        top: 44%;
+        left: 9%;
+        display: flex;
+        position: relative;
+        height: 11%; 
+    }
+    .third-row {
+        top: 45%;
+        left: 10%;
+        display: flex;
+        position: relative;
+        height: 11%;
+    }
+    .fourth-row {
+        top: 46%;
+        left: 6%;
+        display: flex;
+        position: relative;
+        height: 13%;
+    }
+    
+        .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
+        .vk-mod-ss { background: #335; border-color: #446; } /* Symbol Shift */
+        .vk-mod-f5 { background: #353; border-color: #464; grid-column: span 2;}
