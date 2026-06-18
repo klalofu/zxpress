@@ -30,7 +30,6 @@
         onRuntimeInitialized: function() {
             document.getElementById('status').innerText = "Эмулятор готов!";
         },
-
         preRun: [
             function() {
                 const params = new URLSearchParams(window.location.search);
@@ -39,10 +38,11 @@
                 if (gameName) {
                     document.getElementById('status').innerText = "Загрузка " + gameName + "...";
 
-                    // 1. Говорим эмулятору: "Стоп, не запускай main(), пока я не скажу"
                     Module.addRunDependency('game-download');
 
-                    var gameUrl = 'games/' + gameName;
+                    var gameUrl = gameName;
+                    // Если игры в папке, раскомментируйте:
+                    // var gameUrl = 'games/' + gameName;
 
                     var xhr = new XMLHttpRequest();
                     xhr.open('GET', gameUrl, true);
@@ -51,33 +51,33 @@
                     xhr.onload = function() {
                         if (xhr.status === 200) {
                             var data = new Uint8Array(xhr.response);
-
-                            // Создаем файл в корне файловой системы
+                            
+                            // Создаем файл
                             Module.FS_createDataFile('/', gameName, data, true, true, true);
 
-                            // Передаем аргументы (как будто запустили: usp game.trd)
-                            Module.arguments = [gameName];
+                            // !!! ДОБАВЛЕНО: Выводим список файлов в консоль
+                            console.log("Файлы в корне:", Module.FS.readdir('/'));
 
-                            document.getElementById('status').innerText = "Файл получен, запуск эмулятора...";
+                            // !!! ИСПРАВЛЕНО: Передаем путь со слэшем на всякий случай
+                            Module.arguments = ['/' + gameName];
 
-                            // 2. Говорим эмулятору: "Всё, можно запускаться!"
+                            console.log("Аргументы запуска:", Module.arguments);
+                            
+                            document.getElementById('status').innerText = "Файл скачан. Запуск...";
                             Module.removeRunDependency('game-download');
                         } else {
-                            document.getElementById('status').innerText = "Ошибка 404: Файл не найден.";
-                            // Если ошибка, тоже снимаем блокировку, иначе эмулятор зависнет навсегда
+                            document.getElementById('status').innerText = "Ошибка 404";
                             Module.removeRunDependency('game-download');
                         }
                     };
-
                     xhr.onerror = function() {
-                        document.getElementById('status').innerText = "Ошибка сети.";
+                        document.getElementById('status').innerText = "Ошибка сети";
                         Module.removeRunDependency('game-download');
                     };
-
                     xhr.send(null);
                 } else {
-                    // Если игры нет, снимаем блокировку сразу, чтобы эмулятор просто запустился
-                    document.getElementById('status').innerText = "Игра не выбрана. Жду...";
+                     // Если игры нет
+                     console.log("Игра не указана в URL (?game=...)");
                 }
             }
         ]
