@@ -5,6 +5,46 @@
         "file": "spectrofon1.trd"
     },
     {
+        "name": "spectrofon2",
+        "img": "games/spectrofon2.png",
+        "file": "spectrofon2.trd"
+    },
+    {
+        "name": "spectrofon3",
+        "img": "games/spectrofon3.png",
+        "file": "spectrofon3.trd"
+    },
+    {
+        "name": "spectrofon4",
+        "img": "games/spectrofon4.png",
+        "file": "spectrofon4.trd"
+    },
+    {
+        "name": "spectrofon5",
+        "img": "games/spectrofon5.png",
+        "file": "spectrofon5.trd"
+    },
+    {
+        "name": "spectrofon6",
+        "img": "games/spectrofon6.png",
+        "file": "spectrofon6.trd"
+    },
+    {
+        "name": "spectrofon7",
+        "img": "games/spectrofon7.png",
+        "file": "spectrofon7.trd"
+    },
+    {
+        "name": "spectrofon8",
+        "img": "games/spectrofon8.png",
+        "file": "spectrofon8.trd"
+    },
+    {
+        "name": "spectrofon9",
+        "img": "games/spectrofon9.png",
+        "file": "spectrofon9.trd"
+    },
+    {
         "name": "spectrofon10",
         "img": "games/spectrofon10.png",
         "file": "spectrofon10.trd"
@@ -55,11 +95,6 @@
         "file": "spectrofon19.trd"
     },
     {
-        "name": "spectrofon2",
-        "img": "games/spectrofon2.png",
-        "file": "spectrofon2.trd"
-    },
-    {
         "name": "spectrofon20",
         "img": "games/spectrofon20.png",
         "file": "spectrofon20.trd"
@@ -78,40 +113,5 @@
         "name": "spectrofon23",
         "img": "games/spectrofon23.png",
         "file": "spectrofon23.trd"
-    },
-    {
-        "name": "spectrofon3",
-        "img": "games/spectrofon3.png",
-        "file": "spectrofon3.trd"
-    },
-    {
-        "name": "spectrofon4",
-        "img": "games/spectrofon4.png",
-        "file": "spectrofon4.trd"
-    },
-    {
-        "name": "spectrofon5",
-        "img": "games/spectrofon5.png",
-        "file": "spectrofon5.trd"
-    },
-    {
-        "name": "spectrofon6",
-        "img": "games/spectrofon6.png",
-        "file": "spectrofon6.trd"
-    },
-    {
-        "name": "spectrofon7",
-        "img": "games/spectrofon7.png",
-        "file": "spectrofon7.trd"
-    },
-    {
-        "name": "spectrofon8",
-        "img": "games/spectrofon8.png",
-        "file": "spectrofon8.trd"
-    },
-    {
-        "name": "spectrofon9",
-        "img": "games/spectrofon9.png",
-        "file": "spectrofon9.trd"
     }
 ]
