@@ -2,95 +2,146 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Unreal Speccy Web</title>
+    <title>ZX Web Emulator</title>
     <style>
-        body { background: #111; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #888; font-family: monospace; }
-        canvas { box-shadow: 0 0 20px rgba(0,0,0,0.5); background: #000; max-width: 100%; max-height: 90vh; }
-        #status { margin-bottom: 10px; }
+        body { 
+            background: #111; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            color: white; 
+            font-family: sans-serif; 
+            overflow: hidden; 
+        }
+        
+        canvas { 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+            background: #000; 
+            max-width: 100%; 
+            max-height: 90vh; 
+        }
+
+        /* Стили для оверлея (кнопки запуска) */
+        #start-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            cursor: pointer;
+        }
+
+        #start-btn {
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 24px;
+            border-radius: 5px;
+            background: transparent;
+            transition: all 0.2s;
+        }
+        #start-btn:hover { background: #fff; color: #000; }
+        
+        #status { margin-bottom: 10px; pointer-events: none; z-index: 10;}
     </style>
 </head>
 <body>
 
-    <div id="status">Инициализация...</div>
+    <div id="status">Подготовка...</div>
+
+    <!-- Оверлей для клика -->
+    <div id="start-overlay">
+        <div id="start-btn">▶ ЗАПУСТИТЬ ЭМУЛЯТОР</div>
+        <div style="margin-top: 10px; font-size: 14px; color: #aaa;">(Кликните, чтобы включить звук)</div>
+    </div>
+
     <canvas id="canvas"></canvas>
-<script>
-    var Module = {
-        canvas: document.getElementById('canvas'),
 
-        onReady: function() {
-            console.log("Эмулятор готов (onReady)!");
-        },
+    <script>
+        var Module = {
+            canvas: document.getElementById('canvas'),
 
-        locateFile: function(filename) {
-            return filename;
-        },
+            onReady: function() {
+                console.log("USP: onReady");
+            },
 
-        onRuntimeInitialized: function() {
-            document.getElementById('status').innerText = "Эмулятор готов!";
-            console.log("Runtime инициализирован");
-        },
+            locateFile: function(filename) {
+                return filename;
+            },
 
-        preRun: [
-            function() {
-                const params = new URLSearchParams(window.location.search);
-                let gameName = params.get('game');
+            onRuntimeInitialized: function() {
+                document.getElementById('status').innerText = "Готов к запуску. Нажмите кнопку.";
+            },
 
-                if (gameName) {
-                    // Приводим имя файла к нижнему регистру, чтобы избежать проблем с Linux
-                    // (spectrofon1.TRD -> spectrofon1.trd)
-                    gameName = gameName.toLowerCase();
+            preRun: [
+                function() {
+                    const params = new URLSearchParams(window.location.search);
+                    let gameName = params.get('game');
 
-                    document.getElementById('status').innerText = "Загрузка " + gameName + "...";
+                    if (gameName) {
+                        gameName = gameName.toLowerCase();
+                        document.getElementById('status').innerText = "Загрузка " + gameName + "...";
 
-                    // Ставим на паузу запуск C++ кода
-                    Module.addRunDependency('game-download');
+                        Module.addRunDependency('game-download');
 
-                    var gameUrl = 'games/' + gameName;
+                        // Если игры в папке games:
+                        // var gameUrl = 'games/' + gameName;
+                        var gameUrl = gameName;
 
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', gameUrl, true);
-                    xhr.responseType = 'arraybuffer';
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', gameUrl, true);
+                        xhr.responseType = 'arraybuffer';
 
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                            var data = new Uint8Array(xhr.response);
-
-                            // Создаем файл в памяти эмулятора
-                            // Важно: используем gameName (маленькими буквами)
-                            Module.FS_createDataFile('/', gameName, data, true, true, true);
-
-                            // Передаем аргумент запуска эмулятору
-                            Module.arguments = ['/' + gameName];
-
-                            console.log("Файл создан, аргументы запуска:", Module.arguments);
-                            
-                            document.getElementById('status').innerText = "Игра загружена, запуск...";
-                            
-                            // Снимаем паузу, эмулятор запускается
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                var data = new Uint8Array(xhr.response);
+                                Module.FS_createDataFile('/', gameName, data, true, true, true);
+                                Module.arguments = ['/' + gameName];
+                                document.getElementById('status').innerText = "Файл загружен. Жмите кнопку.";
+                                Module.removeRunDependency('game-download');
+                            } else {
+                                document.getElementById('status').innerText = "Ошибка: Файл не найден.";
+                                Module.removeRunDependency('game-download');
+                            }
+                        };
+                        xhr.onerror = function() {
+                            document.getElementById('status').innerText = "Ошибка сети.";
                             Module.removeRunDependency('game-download');
-                        } else {
-                            document.getElementById('status').innerText = "Ошибка 404: Файл '" + gameName + "' не найден на сервере.";
-                            console.error("Не удалось скачать файл", xhr.status);
-                            Module.removeRunDependency('game-download');
-                        }
-                    };
-
-                    xhr.onerror = function() {
-                        document.getElementById('status').innerText = "Ошибка сети.";
-                        console.error("Ошибка сети");
-                        Module.removeRunDependency('game-download');
-                    };
-
-                    xhr.send(null);
-                } else {
-                    console.log("Игра не выбрана (нет параметра ?game=)");
-                    Module.arguments = [];
+                        };
+                        xhr.send(null);
+                    } else {
+                        console.log("Игра не указана");
+                        Module.arguments = [];
+                    }
                 }
-            }
-        ]
-    };
-</script>
+            ]
+        };
 
-<script src="unreal_speccy_portable.js"></script>
-</body
-</html
+        // --- ОБРАБОТЧИК КЛИКА ---
+        var overlay = document.getElementById('start-overlay');
+        
+        overlay.addEventListener('click', function() {
+            // 1. Скрываем кнопку
+            overlay.style.display = 'none';
+            document.getElementById('status').style.display = 'none';
+
+            // 2. Размораживаем аудио (самое важное!)
+            if (Module.SDL2 && Module.SDL2.audioContext && Module.SDL2.audioContext.state === 'suspended') {
+                Module.SDL2.audioContext.resume();
+            }
+
+            // 3. Фокусируемся на канвасе, чтобы работала клавиатура
+            Module.canvas.focus();
+        });
+    </script>
+
+    <script src="unreal_speccy_portable.js"></script>
+
+</body>
+</html>
