@@ -14,61 +14,75 @@
     <div id="status">Инициализация...</div>
     <canvas id="canvas"></canvas>
 
+
     <script>
-        var Module = {
-            canvas: document.getElementById('canvas'), // Привязываем канвас
-            
-            locateFile: function(filename) {
-                return filename;
-            },
-            onRuntimeInitialized: function() {
-                document.getElementById('status').innerText = "Эмулятор готов. Жду загрузку игры...";
-                console.log("Unreal Speccy готов к работе");
-            },
+    var Module = {
+        canvas: document.getElementById('canvas'),
 
-            preRun: [
-                function() {
-                    const params = new URLSearchParams(window.location.search);
-                    const gameName = params.get('game'); // Получаем имя файла из ?game=...
+        // !!! ДОБАВЛЯЕМ ЭТУ ФУНКЦИЮ. Эмулятор требует её для запуска. !!!
+        onReady: function() {
+            console.log("Эмулятор запущен (onReady вызван)");
+            // Если хотите, здесь можно скрыть надпись "Инициализация",
+            // но лучше оставить это для onRuntimeInitialized
+        },
+
+        // Указываем, где лежат файлы (чтобы гарантированно находил их в корне)
+        locateFile: function(filename) {
+            return filename;
+        },
+
+        // Стандартный коллбэк Emscripten (когда всё полностью проинициализировано)
+        onRuntimeInitialized: function() {
+            document.getElementById('status').innerText = "Эмулятор готов!";
+        },
+
+        // preRun - функции, которые выполняются ДО запуска C++ кода
+        preRun: [
+            function() {
+                const params = new URLSearchParams(window.location.search);
+                const gameName = params.get('game');
+                
+                if (gameName) {
+                    document.getElementById('status').innerText = "Загрузка " + gameName + "...";
                     
-                    if (gameName) {
-                        document.getElementById('status').innerText = "Загрузка " + gameName + "...";
-                        
-                        var gameUrl = 'games/' + gameName;
-                        
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', gameUrl, true);
-                        xhr.responseType = 'arraybuffer';
-                        
-                        xhr.onload = function() {
-                            if (xhr.status === 200) {
-                                var data = new Uint8Array(xhr.response);
-                                
-                                Module.FS_createDataFile('/', gameName, data, true, true, true);
-                                
-                                Module.arguments = [gameName];
-                                
-                                document.getElementById('status').innerText = "Игра загружена, запуск...";
-                            } else {
-                                document.getElementById('status').innerText = "Ошибка: Файл не найден (" + xhr.status + ")";
-                            }
-                        };
-                        
-                        xhr.onerror = function() {
-                            document.getElementById('status').innerText = "Ошибка сети при загрузке игры.";
-                        };
-                        
-                        xhr.send(null);
-                    } else {
-                        document.getElementById('status').innerText = "Запуск без игры (укажите ?game=имя_файла в адресе)";
-                        Module.arguments = [];
-                    }
-                }
-            ]
-        };
-    </script>
+                    var gameUrl = gameName; 
+                    // Если вы кладете игры в папку games, раскомментируйте строку ниже:
+                    // var gameUrl = 'games/' + gameName;
 
-    <script src="unreal_speccy_portable.js"></script>
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', gameUrl, true);
+                    xhr.responseType = 'arraybuffer';
+                    
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            var data = new Uint8Array(xhr.response);
+                            
+                            // Создаем файл в корне виртуальной файловой системы
+                            Module.FS_createDataFile('/', gameName, data, true, true, true);
+                            
+                            // Передаем файл как аргумент запуска (как в консоли: usp game.trd)
+                            Module.arguments = [gameName];
+                            
+                            document.getElementById('status').innerText = "Игра загружена!";
+                        } else {
+                            document.getElementById('status').innerText = "Ошибка: Файл " + gameName + " не найден (код " + xhr.status + ")";
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        document.getElementById('status').innerText = "Ошибка сети при загрузке игры.";
+                    };
+                    
+                    xhr.send(null);
+                } else {
+                    document.getElementById('status').innerText = "Запуск без игры. Добавьте ?game=имя_файла в ссылку.";
+                    Module.arguments = [];
+                }
+            }
+        ]
+    };
+</script>
+<script src="unreal_speccy_portable.js"></script>
 
 </body
 </html
