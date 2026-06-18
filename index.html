@@ -232,6 +232,7 @@
     
     buttons.forEach(function(btn) {
         var key = btn.getAttribute('data-key');
+        if (!key) return;
         var isModifier = (key === 'ShiftLeft' || key === 'AltLeft');
 
         var pressHandler = function(e) {
@@ -269,11 +270,12 @@
         btn.addEventListener('mouseleave', releaseHandler);
     });
 
-    document.getElementById('btn-reset').addEventListener('click', function() {
-        Module.canvas.focus();
-        sendKey('F5', 'down');
-        setTimeout(function() { sendKey('F5', 'up'); }, 50);
-    });
+        document.getElementById('btn-reset').addEventListener('click', function(e) {
+            e.preventDefault();
+            Module.canvas.focus();
+            sendKey('F5', 'down');
+            setTimeout(function() { sendKey('F5', 'up'); }, 50);
+        });
         } else {
             Module.arguments = [];
         }
