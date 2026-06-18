@@ -172,8 +172,17 @@
 
                 // --- Логика виртуальной клавиатуры ---
     // --- Логика виртуальной клавиатуры ---
+    // --- Логика виртуальной клавиатуры ---
+    
+    // Инициализация переменной (с защитой от ошибок)
+    if (!window.activeModifiers) {
+        window.activeModifiers = {
+            shift: false,
+            sym: false
+        };
+    }
+    var activeModifiers = window.activeModifiers;
 
-    // Функция для правильного маппинга клавиш (a -> KeyA)
     function getKeyCode(char) {
         if (char.length === 1) {
             if (char >= '0' && char <= '9') return 'Digit' + char;
@@ -184,7 +193,6 @@
             if (char === '-') return 'Minus';
             if (char === '=') return 'Equal';
         }
-        // Специальные клавиши
         if (char === 'Enter') return 'Enter';
         if (char === 'ShiftLeft') return 'ShiftLeft';
         if (char === 'AltLeft') return 'AltLeft';
@@ -194,7 +202,7 @@
     function sendKey(keyCode, type) {
         if (!Module || !Module.canvas) return;
 
-        // ГАВНО: Возвращаем фокус канвасу, чтобы эмулятор "услышал" событие
+        // Гарантируем фокус на канвасе
         Module.canvas.focus();
 
         var code = getKeyCode(keyCode);
@@ -204,7 +212,7 @@
             cancelable: true, 
             key: keyCode, 
             code: code,
-            keyCode: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0, // Для совместимости
+            keyCode: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0, 
             which: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0,
             shiftKey: activeModifiers.shift,
             altKey: activeModifiers.sym
@@ -217,7 +225,6 @@
             event = new KeyboardEvent("keyup", eventInit);
         }
 
-        // Отправляем событие в window, чтобы его поймал глобальный слушатель SDL
         window.dispatchEvent(event);
     }
 
@@ -254,7 +261,6 @@
             }
         };
 
-        // Для поддержки и мышки, и тача
         btn.addEventListener('mousedown', pressHandler);
         btn.addEventListener('touchstart', pressHandler, {passive: false});
 
@@ -263,7 +269,6 @@
         btn.addEventListener('mouseleave', releaseHandler);
     });
 
-    // Кнопка Reset
     document.getElementById('btn-reset').addEventListener('click', function() {
         Module.canvas.focus();
         sendKey('F5', 'down');
