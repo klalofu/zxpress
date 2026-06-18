@@ -85,15 +85,19 @@
         box-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
     .vk-btn {
-        width: 5%;
+        width: 6%;
         height: 12%;
-    }
-    .second-row {
-        top: 30%;
-        left: 19%;
         display: flex;
         position: relative;
         height: 34%;
+    }
+    .first-row {
+        top: 15%;
+        left: 7%;
+    }
+    .second-row {
+        top: 30%;
+        left: 9%; 
     }
     .second-row:first{
         left: 30%;
@@ -159,12 +163,51 @@
                 data-key="Enter">
             </div>
         </div>
-        <!-- Пример: Enter (вертикальная). Допустим, справа -->
-        <div class="vk-btn vk-skin-btn" 
-             data-key="Enter" 
-             style="left: 90%;">
-             ENT
+        <div id="vk-container">
+        <div class="first-row">
+            <div class="vk-btn vk-skin-btn first-row" data-key="1">
+                Q
+            </div>
+            <div class="vk-btn vk-skin-btn first-row" data-key="2">
+                W
+            </div>        
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="3">
+                E
+            </div>        
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="4">
+                R
+            </div>        
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="5">
+                T
+            </div>        
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="6">
+                Y
+            </div>        
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="7">
+                U
+            </div>
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="8">
+                I
+            </div>
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="9">
+                O
+            </div>
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="0">
+                P
+            </div>
+            <div class="vk-btn vk-skin-btn first-row" 
+                data-key="Break">
+            </div>
         </div>
+
         
         <!-- Кнопка Reset (обычно где-то справа или внизу) -->
         <div class="vk-btn vk-skin-btn" id="btn-reset"
