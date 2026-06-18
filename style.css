@@ -10,7 +10,7 @@ body {
     min-height: 100vh;
     color: white;
     font-family: sans-serif;
-    overflow: hidden; /* Чтобы не было скролла */
+    /* overflow: hidden; */
     padding-top: 20px; /* Отступ сверху */
     box-sizing: border-box;
     gap: 20px; /* Отступ между канвасом и клавиатурой */
