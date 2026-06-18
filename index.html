@@ -60,7 +60,6 @@
         touch-action: manipulation;
         box-sizing: border-box;
     }
-
     /* Стиль кнопок для скина */
     .vk-skin-btn {
         position: absolute;
@@ -85,7 +84,14 @@
         background-color: rgba(255, 255, 255, 0.5); /* Ярче при нажатии */
         box-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
-
+    .vk-btn {
+        width: 5%;
+        height: 12%;
+    }
+    .second-row {
+        top: 40%;
+        left: 19%;
+    }
     /* Если хотите совсем прозрачные кнопки (невидимые), уберите background-color выше */
         /* Специальные цвета для модификаторов */
         .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
@@ -113,16 +119,47 @@
         </div>
 
         <!-- Пример: клавиша Q. Допустим, на 15% слева и 45% сверху -->
-        <div class="vk-btn vk-skin-btn" 
-             data-key="q" 
-             style="top: 45%; left: 15%; width: 6%; height: 6%;">
+        <div class="vk-btn vk-skin-btn second-row" 
+             data-key="q">
              Q
         </div>
-
+        <div class="second-row"
+            <div class="vk-btn vk-skin-btn" 
+                data-key="q">
+                W
+            </div>        <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                E
+            </div>        <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                R
+            </div>        <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                T
+            </div>        <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                Y
+            </div>        <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                U
+            </div>
+            <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                I
+            </div>
+            <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                O
+            </div>
+            <div class="vk-btn vk-skin-btn second-row" 
+                data-key="q">
+                P
+            </div>
+        </div>
         <!-- Пример: Enter (вертикальная). Допустим, справа -->
         <div class="vk-btn vk-skin-btn" 
              data-key="Enter" 
-             style="top: 60%; left: 90%; width: 5%; height: 15%;">
+             style="left: 90%;">
              ENT
         </div>
         
