@@ -13,14 +13,12 @@
 
     <div id="status">Инициализация...</div>
     <canvas id="canvas"></canvas>
-
-
 <script>
     var Module = {
         canvas: document.getElementById('canvas'),
 
         onReady: function() {
-            console.log("Эмулятор готов!");
+            console.log("Эмулятор готов (onReady)!");
         },
 
         locateFile: function(filename) {
@@ -29,15 +27,22 @@
 
         onRuntimeInitialized: function() {
             document.getElementById('status').innerText = "Эмулятор готов!";
+            console.log("Runtime инициализирован");
         },
+
         preRun: [
             function() {
                 const params = new URLSearchParams(window.location.search);
-                const gameName = params.get('game');
+                let gameName = params.get('game');
 
                 if (gameName) {
+                    // Приводим имя файла к нижнему регистру, чтобы избежать проблем с Linux
+                    // (spectrofon1.TRD -> spectrofon1.trd)
+                    gameName = gameName.toLowerCase();
+
                     document.getElementById('status').innerText = "Загрузка " + gameName + "...";
 
+                    // Ставим на паузу запуск C++ кода
                     Module.addRunDependency('game-download');
 
                     var gameUrl = 'games/' + gameName;
@@ -49,33 +54,37 @@
                     xhr.onload = function() {
                         if (xhr.status === 200) {
                             var data = new Uint8Array(xhr.response);
-                            
-                            // Создаем файл
+
+                            // Создаем файл в памяти эмулятора
+                            // Важно: используем gameName (маленькими буквами)
                             Module.FS_createDataFile('/', gameName, data, true, true, true);
 
-                            // !!! ДОБАВЛЕНО: Выводим список файлов в консоль
-                            console.log("Файлы в корне:", Module.FS.readdir('/'));
-
-                            // !!! ИСПРАВЛЕНО: Передаем путь со слэшем на всякий случай
+                            // Передаем аргумент запуска эмулятору
                             Module.arguments = ['/' + gameName];
 
-                            console.log("Аргументы запуска:", Module.arguments);
+                            console.log("Файл создан, аргументы запуска:", Module.arguments);
                             
-                            document.getElementById('status').innerText = "Файл скачан. Запуск...";
+                            document.getElementById('status').innerText = "Игра загружена, запуск...";
+                            
+                            // Снимаем паузу, эмулятор запускается
                             Module.removeRunDependency('game-download');
                         } else {
-                            document.getElementById('status').innerText = "Ошибка 404";
+                            document.getElementById('status').innerText = "Ошибка 404: Файл '" + gameName + "' не найден на сервере.";
+                            console.error("Не удалось скачать файл", xhr.status);
                             Module.removeRunDependency('game-download');
                         }
                     };
+
                     xhr.onerror = function() {
-                        document.getElementById('status').innerText = "Ошибка сети";
+                        document.getElementById('status').innerText = "Ошибка сети.";
+                        console.error("Ошибка сети");
                         Module.removeRunDependency('game-download');
                     };
+
                     xhr.send(null);
                 } else {
-                     // Если игры нет
-                     console.log("Игра не указана в URL (?game=...)");
+                    console.log("Игра не выбрана (нет параметра ?game=)");
+                    Module.arguments = [];
                 }
             }
         ]
@@ -83,6 +92,5 @@
 </script>
 
 <script src="unreal_speccy_portable.js"></script>
-
 </body
 </html
