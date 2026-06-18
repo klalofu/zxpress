@@ -45,9 +45,9 @@
                 if (gameName) {
                     document.getElementById('status').innerText = "Загрузка " + gameName + "...";
                     
-                    var gameUrl = gameName; 
+                    // var gameUrl = gameName; 
                     // Если вы кладете игры в папку games, раскомментируйте строку ниже:
-                    // var gameUrl = 'games/' + gameName;
+                    var gameUrl = 'games/' + gameName;
 
                     var xhr = new XMLHttpRequest();
                     xhr.open('GET', gameUrl, true);
