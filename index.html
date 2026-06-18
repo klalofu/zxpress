@@ -90,9 +90,7 @@
 
                         Module.addRunDependency('game-download');
 
-                        // Если игры в папке games:
-                        // var gameUrl = 'games/' + gameName;
-                        var gameUrl = gameName;
+                        var gameUrl = 'games/' + gameName;
 
                         var xhr = new XMLHttpRequest();
                         xhr.open('GET', gameUrl, true);
