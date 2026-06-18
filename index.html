@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Unreal Speccy Web</title>
+    <style>
+        body { background: #111; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #888; font-family: monospace; }
+        canvas { box-shadow: 0 0 20px rgba(0,0,0,0.5); background: #000; max-width: 100%; max-height: 90vh; }
+        #status { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="status">Инициализация...</div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        var Module = {
+            canvas: document.getElementById('canvas'), // Привязываем канвас
+            
+            onRuntimeInitialized: function() {
+                document.getElementById('status').innerText = "Эмулятор готов. Жду загрузку игры...";
+                console.log("Unreal Speccy готов к работе");
+            },
+
+            preRun: [
+                function() {
+                    const params = new URLSearchParams(window.location.search);
+                    const gameName = params.get('game'); // Получаем имя файла из ?game=...
+                    
+                    if (gameName) {
+                        document.getElementById('status').innerText = "Загрузка " + gameName + "...";
+                        
+                        var gameUrl = 'games/' + gameName;
+                        
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', gameUrl, true);
+                        xhr.responseType = 'arraybuffer';
+                        
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                var data = new Uint8Array(xhr.response);
+                                
+                                Module.FS_createDataFile('/', gameName, data, true, true, true);
+                                
+                                Module.arguments = [gameName];
+                                
+                                document.getElementById('status').innerText = "Игра загружена, запуск...";
+                            } else {
+                                document.getElementById('status').innerText = "Ошибка: Файл не найден (" + xhr.status + ")";
+                            }
+                        };
+                        
+                        xhr.onerror = function() {
+                            document.getElementById('status').innerText = "Ошибка сети при загрузке игры.";
+                        };
+                        
+                        xhr.send(null);
+                    } else {
+                        document.getElementById('status').innerText = "Запуск без игры (укажите ?game=имя_файла в адресе)";
+                        Module.arguments = [];
+                    }
+                }
+            ]
+        };
+    </script>
+
+    <sript src="unreal_speccy_portable.js"></script>
+
+</body
+</html
