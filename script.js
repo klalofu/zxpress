@@ -62,6 +62,8 @@ var Module = {
             
             // Фокусируемся на канвасе, чтобы работали кнопки
             Module.canvas.focus();
+            window.dispatchEvent(new Event('resize'));
+            setTimeout(() => Module.canvas.focus(), 100);
         } else {
             // Если игры нет (просто index.html)
             // Показываем меню и галерею, прячем эмулятор
@@ -122,7 +124,7 @@ if (gameName) {
 }
 
 // --- 4. UI ЛОГИКА ---
-
+/*
 var overlay = document.getElementById('start-overlay');
 overlay.addEventListener('click', function() {
     overlay.style.display = 'none';
@@ -136,7 +138,7 @@ overlay.addEventListener('click', function() {
         setTimeout(() => sendKey('F5', 'up'), 50);
     }, 500);
 });
-
+*/
 // --- 5. КЛАВИАТУРА ---
 if (!window.activeModifiers) window.activeModifiers = { shift: false, sym: false };
 var activeModifiers = window.activeModifiers;
