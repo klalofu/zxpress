@@ -43,7 +43,44 @@
         }
         #start-btn:hover { background: #fff; color: #000; }
         #status { margin-bottom: 10px; pointer-events: none; z-index: 10;}
-    </style>
+        #vk-container {
+            width: 100%;
+            max-width: 640px;
+            background: #222;
+            padding: 5px;
+            padding-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            user-select: none; /* Запрет выделения текста */
+            touch-action: manipulation; /* Запрет зума */
+            box-sizing: border-box;
+        }
+
+        .vk-btn {
+            background: #444;
+            color: #eee;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 12px 0;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #000;
+        }
+
+        .vk-btn:active, .vk-btn.active {
+            background: #666;
+            box-shadow: 0 0 0 #000;
+            transform: translateY(2px);
+        }
+
+        /* Специальные цвета для модификаторов */
+        .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
+        .vk-mod-ss { background: #335; border-color: #446; } /* Symbol Shift */
+        .vk-mod-f5 { background: #353; border-color: #464; grid-column: span 2;} /* Reset */
+</style>
 </head>
 <body>
 
@@ -54,7 +91,60 @@
     </div>
 
     <canvas id="canvas"></canvas>
+    <!-- Виртуальная клавиатура -->
+    <div id="vk-container">
+        <!-- Ряд 1: Цифры и Backspace -->
+        <div class="vk-btn" data-key="1">1</div>
+        <div class="vk-btn" data-key="2">2</div>
+        <div class="vk-btn" data-key="3">3</div>
+        <div class="vk-btn" data-key="4">4</div>
+        <div class="vk-btn" data-key="5">5</div>
+        <div class="vk-btn" data-key="6">6</div>
+        <div class="vk-btn" data-key="7">7</div>
+        <div class="vk-btn" data-key="8">8</div>
+        <div class="vk-btn" data-key="9">9</div>
+        <div class="vk-btn" data-key="0">0</div>
+        <!-- Backspace на отдельной строке или 11-й кнопкой, пока оставим просто -->
 
+        <!-- Ряд 2: Q-P -->
+        <div class="vk-btn" data-key="q">Q</div>
+        <div class="vk-btn" data-key="w">W</div>
+        <div class="vk-btn" data-key="e">E</div>
+        <div class="vk-btn" data-key="r">R</div>
+        <div class="vk-btn" data-key="t">T</div>
+        <div class="vk-btn" data-key="y">Y</div>
+        <div class="vk-btn" data-key="u">U</div>
+        <div class="vk-btn" data-key="i">I</div>
+        <div class="vk-btn" data-key="o">O</div>
+        <div class="vk-btn" data-key="p">P</div>
+
+        <!-- Ряд 3: A-L + Enter + CS -->
+        <div class="vk-btn vk-mod-cs" data-key="ShiftLeft" id="btn-cs">CS</div>
+        <div class="vk-btn" data-key="a">A</div>
+        <div class="vk-btn" data-key="s">S</div>
+        <div class="vk-btn" data-key="d">D</div>
+        <div class="vk-btn" data-key="f">F</div>
+        <div class="vk-btn" data-key="g">G</div>
+        <div class="vk-btn" data-key="h">H</div>
+        <div class="vk-btn" data-key="j">J</div>
+        <div class="vk-btn" data-key="k">K</div>
+        <div class="vk-btn" data-key="l">L</div>
+        <div class="vk-btn" data-key="Enter">ENT</div>
+
+        <!-- Ряд 4: Z-M + Space + SS -->
+        <div class="vk-btn vk-mod-ss" data-key="AltLeft" id="btn-ss">SS</div>
+        <div class="vk-btn" data-key="z">Z</div>
+        <div class="vk-btn" data-key="x">X</div>
+        <div class="vk-btn" data-key="c">C</div>
+        <div class="vk-btn" data-key="v">V</div>
+        <div class="vk-btn" data-key="b">B</div>
+        <div class="vk-btn" data-key="n">N</div>
+        <div class="vk-btn" data-key="m">M</div>
+        <div class="vk-btn" data-key="." style="grid-column: span 2">.</div>
+
+        <!-- Кнопка сброса (удобно на мобилке) -->
+        <div class="vk-btn vk-mod-f5" id="btn-reset">RESET (F5)</div>
+    </div>
     <!-- ШАГ 1: Настраиваем Module ДО загрузки скрипта эмулятора -->
     <script>
         var Module = {
@@ -79,6 +169,97 @@
             // Эмулятор прочитает их, когда скрипт загрузится ниже.
             // Используем относительный путь ./ , так как USP на это рассчитывает
             Module.arguments = ['./' + gameName];
+
+                // --- Логика виртуальной клавиатуры ---
+            var activeModifiers = {
+                shift: false,
+                sym: false
+            };
+
+            function sendKey(keyCode, type, isModifier) {
+                if (!Module || !Module.canvas) return;
+
+                var event;
+                // Событие нужно именно на канвас, чтобы его поймал SDL
+                var target = Module.canvas;
+
+                if (type === 'down') {
+                    event = new KeyboardEvent("keydown", {
+                        bubbles: true, 
+                        cancelable: true, 
+                        key: keyCode, 
+                        code: keyCode,
+                        shiftKey: activeModifiers.shift,
+                        altKey: activeModifiers.sym
+                    });
+                    target.dispatchEvent(event);
+                } else if (type === 'up') {
+                    event = new KeyboardEvent("keyup", {
+                        bubbles: true, 
+                        cancelable: true, 
+                        key: keyCode, 
+                        code: keyCode,
+                        shiftKey: activeModifiers.shift,
+                        altKey: activeModifiers.sym
+                    });
+                    target.dispatchEvent(event);
+                }
+            }
+
+            // Навешиваем обработчики на кнопки
+            var buttons = document.querySelectorAll('.vk-btn');
+            buttons.forEach(function(btn) {
+                var key = btn.getAttribute('data-key');
+                var isModifier = (key === 'ShiftLeft' || key === 'AltLeft');
+
+                // Обработка нажатия (для мыши и тача)
+                var pressHandler = function(e) {
+                    e.preventDefault(); // Чтобы не было зума и выделения
+                    
+                    if (isModifier) {
+                        // Если это модификатор, переключаем его состояние
+                        if (key === 'ShiftLeft') {
+                            activeModifiers.shift = !activeModifiers.shift;
+                            btn.classList.toggle('active', activeModifiers.shift);
+                            sendKey('ShiftLeft', activeModifiers.shift ? 'down' : 'up', true);
+                        } else if (key === 'AltLeft') {
+                            activeModifiers.sym = !activeModifiers.sym;
+                            btn.classList.toggle('active', activeModifiers.sym);
+                            sendKey('AltLeft', activeModifiers.sym ? 'down' : 'up', true);
+                        }
+                    } else {
+                        // Обычная клавиша
+                        btn.classList.add('active');
+                        sendKey(key, 'down', false);
+                    }
+                };
+
+                // Обработка отпускания
+                var releaseHandler = function(e) {
+                    e.preventDefault();
+                    
+                    if (!isModifier) {
+                        btn.classList.remove('active');
+                        sendKey(key, 'up', false);
+                    }
+                    // Модификаторы сами по себе не "отпускаются" при тапе (как CapsLock), 
+                    // а переключаются. Поэтому здесь ничего не делаем.
+                };
+
+                btn.addEventListener('mousedown', pressHandler);
+                btn.addEventListener('touchstart', pressHandler, {passive: false});
+
+                btn.addEventListener('mouseup', releaseHandler);
+                btn.addEventListener('touchend', releaseHandler);
+                // На случай увода пальца/мыши с кнопки
+                btn.addEventListener('mouseleave', releaseHandler);
+            });
+
+            // Отдельная логика для RESET
+            document.getElementById('btn-reset').addEventListener('click', function() {
+                sendKey('F5', 'down', false);
+                setTimeout(function() { sendKey('F5', 'up', false); }, 50);
+            });
         } else {
             Module.arguments = [];
         }
