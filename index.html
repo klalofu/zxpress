@@ -18,6 +18,9 @@
         var Module = {
             canvas: document.getElementById('canvas'), // Привязываем канвас
             
+            locateFile: function(filename) {
+                return filename;
+            },
             onRuntimeInitialized: function() {
                 document.getElementById('status').innerText = "Эмулятор готов. Жду загрузку игры...";
                 console.log("Unreal Speccy готов к работе");
