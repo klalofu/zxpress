@@ -43,39 +43,50 @@
         }
         #start-btn:hover { background: #fff; color: #000; }
         #status { margin-bottom: 10px; pointer-events: none; z-index: 10;}
-        #vk-container {
-            width: 100%;
-            max-width: 640px;
-            background: #222;
-            padding: 5px;
-            padding-bottom: 20px;
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 4px;
-            user-select: none; /* Запрет выделения текста */
-            touch-action: manipulation; /* Запрет зума */
-            box-sizing: border-box;
-        }
+    #vk-container {
+        position: relative;
+        width: 100%; /* Растягивается на ширину экрана */
+        max-width: 800px; /* Но не шире оригинала (поставьте вашу ширину картинки) */
+        
+        /* ВАЖНО: Сохраняем пропорции картинки, чтобы кнопки не поехали */
+        aspect-ratio: 1000 / 400; /* (Ширина картинки / Высота картинки) */
+        
+        background-image: url('keyboard.jpg'); /* Путь к вашему файлу */
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        
+        margin-top: 20px;
+        user-select: none;
+        touch-action: manipulation;
+        box-sizing: border-box;
+    }
 
-        .vk-btn {
-            background: #444;
-            color: #eee;
-            border: 1px solid #555;
-            border-radius: 4px;
-            padding: 12px 0;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 2px 0 #000;
-        }
+    /* Стиль кнопок для скина */
+    .vk-skin-btn {
+        position: absolute;
+        
+        /* Делаем кнопки полупрозрачными, чтобы видеть картинку */
+        background-color: rgba(255, 255, 255, 0.1); 
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: transparent; /* Текст скрыт, видна только подложка */
+        
+        /* Центрируем текст внутри кнопки, если захотите его видеть */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
 
-        .vk-btn:active, .vk-btn.active {
-            background: #666;
-            box-shadow: 0 0 0 #000;
-            transform: translateY(2px);
-        }
+    /* Эффект нажатия */
+    .vk-skin-btn:active, .vk-skin-btn.active {
+        background-color: rgba(255, 255, 255, 0.5); /* Ярче при нажатии */
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
 
+    /* Если хотите совсем прозрачные кнопки (невидимые), уберите background-color выше */
         /* Специальные цвета для модификаторов */
         .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
         .vk-mod-ss { background: #335; border-color: #446; } /* Symbol Shift */
@@ -91,59 +102,35 @@
     </div>
 
     <canvas id="canvas"></canvas>
-    <!-- Виртуальная клавиатура -->
     <div id="vk-container">
-        <!-- Ряд 1: Цифры и Backspace -->
-        <div class="vk-btn" data-key="1">1</div>
-        <div class="vk-btn" data-key="2">2</div>
-        <div class="vk-btn" data-key="3">3</div>
-        <div class="vk-btn" data-key="4">4</div>
-        <div class="vk-btn" data-key="5">5</div>
-        <div class="vk-btn" data-key="6">6</div>
-        <div class="vk-btn" data-key="7">7</div>
-        <div class="vk-btn" data-key="8">8</div>
-        <div class="vk-btn" data-key="9">9</div>
-        <div class="vk-btn" data-key="0">0</div>
-        <!-- Backspace на отдельной строке или 11-й кнопкой, пока оставим просто -->
+        <!-- Кнопки (невидимые, но кликабельные) -->
+        
+        <!-- Пример: Caps Shift (CS). Допустим, она находится на 10% слева и 30% сверху -->
+        <div class="vk-btn vk-skin-btn" 
+             data-key="ShiftLeft" 
+             style="top: 30%; left: 10%; width: 8%; height: 8%;">
+             CS
+        </div>
 
-        <!-- Ряд 2: Q-P -->
-        <div class="vk-btn" data-key="q">Q</div>
-        <div class="vk-btn" data-key="w">W</div>
-        <div class="vk-btn" data-key="e">E</div>
-        <div class="vk-btn" data-key="r">R</div>
-        <div class="vk-btn" data-key="t">T</div>
-        <div class="vk-btn" data-key="y">Y</div>
-        <div class="vk-btn" data-key="u">U</div>
-        <div class="vk-btn" data-key="i">I</div>
-        <div class="vk-btn" data-key="o">O</div>
-        <div class="vk-btn" data-key="p">P</div>
+        <!-- Пример: клавиша Q. Допустим, на 15% слева и 45% сверху -->
+        <div class="vk-btn vk-skin-btn" 
+             data-key="q" 
+             style="top: 45%; left: 15%; width: 6%; height: 6%;">
+             Q
+        </div>
 
-        <!-- Ряд 3: A-L + Enter + CS -->
-        <div class="vk-btn vk-mod-cs" data-key="ShiftLeft" id="btn-cs">CS</div>
-        <div class="vk-btn" data-key="a">A</div>
-        <div class="vk-btn" data-key="s">S</div>
-        <div class="vk-btn" data-key="d">D</div>
-        <div class="vk-btn" data-key="f">F</div>
-        <div class="vk-btn" data-key="g">G</div>
-        <div class="vk-btn" data-key="h">H</div>
-        <div class="vk-btn" data-key="j">J</div>
-        <div class="vk-btn" data-key="k">K</div>
-        <div class="vk-btn" data-key="l">L</div>
-        <div class="vk-btn" data-key="Enter">ENT</div>
-
-        <!-- Ряд 4: Z-M + Space + SS -->
-        <div class="vk-btn vk-mod-ss" data-key="AltLeft" id="btn-ss">SS</div>
-        <div class="vk-btn" data-key="z">Z</div>
-        <div class="vk-btn" data-key="x">X</div>
-        <div class="vk-btn" data-key="c">C</div>
-        <div class="vk-btn" data-key="v">V</div>
-        <div class="vk-btn" data-key="b">B</div>
-        <div class="vk-btn" data-key="n">N</div>
-        <div class="vk-btn" data-key="m">M</div>
-        <div class="vk-btn" data-key="." style="grid-column: span 2">.</div>
-
-        <!-- Кнопка сброса (удобно на мобилке) -->
-        <div class="vk-btn vk-mod-f5" id="btn-reset">RESET (F5)</div>
+        <!-- Пример: Enter (вертикальная). Допустим, справа -->
+        <div class="vk-btn vk-skin-btn" 
+             data-key="Enter" 
+             style="top: 60%; left: 90%; width: 5%; height: 15%;">
+             ENT
+        </div>
+        
+        <!-- Кнопка Reset (обычно где-то справа или внизу) -->
+        <div class="vk-btn vk-skin-btn" id="btn-reset"
+             style="top: 5%; left: 85%; width: 10%; height: 8%;">
+             RST
+        </div>
     </div>
     <!-- ШАГ 1: Настраиваем Module ДО загрузки скрипта эмулятора -->
     <script>
