@@ -159,11 +159,16 @@ function getKeyCode(char) {
 function sendKey(keyCode, type) {
     if (!Module || !Module.canvas) return;
     Module.canvas.focus();
+    
     var code = getKeyCode(keyCode);
-    var event = new KeyboardEvent(type === 'down' ? "keydown" : "keyup", {
+    var eventInit = {
         bubbles: true, cancelable: true, key: keyCode, code: code,
+        keyCode: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0,
+        which: keyCode.length === 1 ? keyCode.toUpperCase().charCodeAt(0) : 0,
         shiftKey: activeModifiers.shift, altKey: activeModifiers.sym
-    });
+    };
+    
+    var event = new KeyboardEvent(type === 'down' ? "keydown" : "keyup", eventInit);
     window.dispatchEvent(event);
 }
 
