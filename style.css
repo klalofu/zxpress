@@ -123,6 +123,7 @@ body {
         display: flex;
         position: relative;
         height: 12%;
+        width: 93%;
     }
     .second-row {
         top: 44%;
@@ -130,6 +131,7 @@ body {
         display: flex;
         position: relative;
         height: 11%; 
+        margin-right: 7%;
     }
     .third-row {
         top: 45%;
@@ -137,6 +139,7 @@ body {
         display: flex;
         position: relative;
         height: 11%;
+        margin-right: 6%;
     }
     .fourth-row {
         top: 46%;
@@ -144,6 +147,7 @@ body {
         display: flex;
         position: relative;
         height: 13%;
+        margin-right: 5%;
     }
     
 .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
