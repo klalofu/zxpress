@@ -123,19 +123,33 @@
 
         // --- ОБРАБОТЧИК КЛИКА ---
         var overlay = document.getElementById('start-overlay');
-        
         overlay.addEventListener('click', function() {
-            // 1. Скрываем кнопку
+            console.log("Клик по кнопке получен!");
+            
             overlay.style.display = 'none';
             document.getElementById('status').style.display = 'none';
-
-            // 2. Размораживаем аудио (самое важное!)
-            if (Module.SDL2 && Module.SDL2.audioContext && Module.SDL2.audioContext.state === 'suspended') {
-                Module.SDL2.audioContext.resume();
+            
+            // Попытка разморозить звук
+            if (Module.SDL2 && Module.SDL2.audioContext) {
+                var state = Module.SDL2.audioContext.state;
+                console.log("Состояние AudioContext ДО:", state);
+                
+                if (state === 'suspended') {
+                    Module.SDL2.audioContext.resume().then(function() {
+                        console.log("AudioContext успешно запущен (RESUME)");
+                    }).catch(function(e) {
+                        console.error("Не удалось запустить AudioContext:", e);
+                    });
+                } else {
+                    console.log("AudioContext уже работает или в состоянии:", state);
+                }
+            } else {
+                console.warn("Module.SDL2 или audioContext не найден!");
             }
 
-            // 3. Фокусируемся на канвасе, чтобы работала клавиатура
+            // Принудительный фокус
             Module.canvas.focus();
+            Module.canvas.setAttribute('tabindex', '1');
         });
     </script>
 
