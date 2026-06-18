@@ -73,7 +73,7 @@ body {
         background-size: 100% 100%;
         background-repeat: no-repeat;
         
-        height: 50vh;
+        height: 32vh;
         user-select: none;
         touch-action: manipulation;
         box-sizing: border-box;
@@ -138,6 +138,72 @@ body {
         height: 13%;
     }
     
-        .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
-        .vk-mod-ss { background: #335; border-color: #446; } /* Symbol Shift */
-        .vk-mod-f5 { background: #353; border-color: #464; grid-column: span 2;}
+.vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
+.vk-mod-ss { background: #335; border-color: #446; } /* Symbol Shift */
+.vk-mod-f5 { background: #353; border-color: #464; grid-column: span 2;}
+
+/* --- Стили для галереи игр --- */
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
+    color: #ddd;
+}
+
+.page-header h1 { margin: 0; }
+.page-header p { color: #888; margin-top: 5px; }
+
+.gallery {
+    display: grid;
+    /* Автоматическое заполнение рядами карточками шириной минимум 150px */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+    box-sizing: border-box;
+}
+
+.game-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: #eee;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: #888;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+}
+
+.game-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1; /* Квадратные превью */
+    object-fit: cover;
+    border-bottom: 1px solid #333;
+    display: block;
+}
+
+.game-title {
+    padding: 10px;
+    font-size: 13px;
+    text-align: center;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#canvas, #vk-container {
+    display: none; 
+}

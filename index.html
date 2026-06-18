@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="page-header">
+        <h1>Игры ZX Spectrum</h1>
+        <p>Выберите игру для запуска</p>
+    </div>
 
-    <!-- Статус загрузки -->
-    <div id="status">Подготовка...</div>
-
-    <!-- Оверлей "Нажми, чтобы стартовать" -->
-    <div id="start-overlay">
-        <div id="start-btn">▶ ЗАПУСТИТЬ</div>
+    <!-- Контейнер, куда JS загрузит игры -->
+    <div id="gallery-container">
+        <!-- Сюда скрипт вставит карточки -->
+        <div style="text-align:center; width:100%;">Загрузка каталога...</div>
     </div>
 
     <!-- Экран эмулятора -->
@@ -190,6 +192,12 @@
              RST
         </div>
     </div>
+
+        <!-- Стартовый оверлей -->
+    <div id="start-overlay">
+        <div id="start-btn">▶ ЗАПУСТИТЬ</div>
+    </div>
+    <div id="status"></div>
         <!-- Подключение скриптов. ВАЖЕН ПОРЯДОК! -->
     <!-- 1. Сначала наш скрипт (настраивает Module и preRun) -->
     <script src="script.js"></script>
