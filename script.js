@@ -60,6 +60,7 @@ var Module = {
         console.log("USP Ready");
         
         if (gameName) {
+            document.body.classList.add('emulator-mode');
             document.querySelector('.page-header').style.display = 'none';
             document.getElementById('gallery-container').style.display = 'none';
             document.getElementById('canvas').style.display = 'block';
@@ -81,6 +82,7 @@ var Module = {
         } else {
             // Если игры нет (просто index.html)
             // Показываем меню и галерею, прячем эмулятор
+            document.body.classList.remove('emulator-mode');
             document.getElementById('start-overlay').style.display = 'none';
             document.querySelector('.page-header').style.display = 'block';
             document.getElementById('gallery-container').style.display = 'grid'; 
@@ -101,6 +103,7 @@ window.addEventListener('popstate', () => {
 if (gameName) {
     gameName = gameName.toLowerCase();
     Module.arguments = ['./' + gameName];
+    document.body.classList.add('emulator-mode');
 } else {
     Module.arguments = [];
 }

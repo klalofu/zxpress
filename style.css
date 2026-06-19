@@ -1,6 +1,6 @@
 /* Основные стили страницы */
 body {
-    background: #111;
+    background: #000;
     margin: 0;
     padding: 0;
     display: flex;
@@ -13,6 +13,20 @@ body {
     /* overflow: hidden; */
     padding-top: 20px; /* Отступ сверху */
     box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+body.emulator-mode {
+    /* Магия для мобильного эмулятора: */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;      /* Фоллбэк */
+    height: 100dvh;    /* Динамическая высота без учета адресной строки */
+    overflow: hidden;  /* КАТЕГОРИЧЕСКИ запрещаем скролл */
+    touch-action: manipulation;
+    min-height: unset; /* Отменяем min-height из базового стиля */
 }
 
 #canvas {
@@ -262,5 +276,26 @@ body {
         margin-top: auto;
         margin-bottom: auto;
         image-rendering: pixelated;
+    }
+}
+
+@media (pointer: fine) {
+    body {
+        position: relative; 
+        height: auto;
+    }
+    
+    /* На десктопе класс emulator-mode не должен ломать центрирование */
+    body.emulator-mode {
+        position: relative;
+        height: auto;
+        min-height: 100vh;
+        overflow: hidden; /* Все равно держим скролл заблокированным на ПК во время игры */
+    }
+
+    #canvas {
+        flex-shrink: 0;
+        margin-top: auto;
+        margin-bottom: auto;
     }
 }
