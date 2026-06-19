@@ -1,4 +1,14 @@
-// --- 1. ГЕНЕРАЦИЯ ГАЛЕРЕИ ---
+function isMobileDevice() {
+    // Современный и самый точный способ
+    if (window.matchMedia) {
+        return window.matchMedia("(pointer: coarse)").matches;
+    }
+    // Фоллбэк для древних браузеров (через User-Agent)
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
+}
+
+// --- 1. ГЕНЕРАЦИЯ ГАЛЕРЕИ --6-
 
 async function loadGallery() {
     try {
@@ -53,7 +63,6 @@ var Module = {
         if (gameName) {
             document.querySelector('.page-header').style.display = 'none';
             document.getElementById('gallery-container').style.display = 'none';
-            document.getElementById('vk-container').style.display = 'block';
             document.getElementById('canvas').style.display = 'block';
             document.getElementById('start-overlay').style.display = 'flex';
             
@@ -61,6 +70,12 @@ var Module = {
             Module.canvas.focus();
             window.dispatchEvent(new Event('resize'));
             setTimeout(() => Module.canvas.focus(), 100);
+            if (isMobileDevice()) {
+                document.getElementById('vk-container').style.display = 'block';
+                setTimeout(resizeKeyboard, 100);
+            } else {
+                document.getElementById('vk-container').style.display = 'none';
+            }
         } else {
             // Если игры нет (просто index.html)
             // Показываем меню и галерею, прячем эмулятор
@@ -205,6 +220,54 @@ buttons.forEach(function(btn) {
     btn.addEventListener('touchend', releaseHandler);
     btn.addEventListener('mouseleave', releaseHandler);
 });
+// --- РЕСАЙЗ КЛАВИАТУРЫ ПОД ОСТАВШЕЕСЯ МЕСТО ---
+function resizeKeyboard() {
+    const vkContainer = document.getElementById('vk-container');
+    
+    // Если клавиатура скрыта (ПК или главное меню), ничего не делаем
+    if (!vkContainer || vkContainer.style.display === 'none') return;
+
+    const canvas = document.getElementById('canvas');
+    
+    // Базовые размеры клавиатуры (должны совпадать с CSS)
+    const kbBaseWidth = 800;
+    const kbBaseHeight = 400;
+
+    // 1. Узнаем, сколько места занял канвас
+    const canvasRect = canvas.getBoundingClientRect();
+    const canvasBottom = canvasRect.bottom;
+
+    // 2. Узнаем, сколько места осталось снизу
+    const availableHeight = window.innerHeight - canvasBottom - 10; // -10px для маленького отступа
+    const availableWidth = window.innerWidth;
+
+    // 3. Считаем коэффициенты масштабирования
+    const scaleByWidth = availableWidth / kbBaseWidth;
+    const scaleByHeight = availableHeight / kbBaseHeight;
+
+    // Выбираем наименьший масштаб, чтобы клавиатура влезла и по ширине, и по высоте
+    // Ограничиваем максимальное увеличение (x1.5), чтобы на больших планшетах не было гигантских кнопок
+    let finalScale = Math.min(scaleByWidth, scaleByHeight, 1.5);
+
+    // Не уменьшаем меньше определенного предела, чтобы на крошечных экранах кнопки не стали неразличимы
+    if (finalScale < 0.4) finalScale = 0.4;
+
+    // 4. Применяем трансформацию
+    vkContainer.style.transform = `scale(${finalScale})`;
+
+    // 5. ФИКС ЛАЙОУТА: transform не меняет физический размер элемента в документе.
+    // Поэтому мы должны уменьшить margin-bottom, чтобы убрать пустое место снизу.
+    const renderedHeight = kbBaseHeight * finalScale;
+    const emptySpace = renderedHeight - kbBaseHeight;
+    vkContainer.style.marginBottom = `${emptySpace}px`;
+}
+
+// Запускаем при загрузке
+window.addEventListener('load', resizeKeyboard);
+// Запускаем при повороте экрана или изменении размера окна
+window.addEventListener('resize', resizeKeyboard);
+// Запускаем после того, как эмулятор скрыл меню и показал клавиатуру
+// (Вызовем это в Module.onReady чуть ниже)
 
 document.getElementById('btn-reset').addEventListener('click', function(e) {
     e.preventDefault();

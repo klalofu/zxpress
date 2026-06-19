@@ -33,6 +33,7 @@ body {
     
     object-fit: contain; /* Картинка масштабируется с сохранением пропорций */
     margin: 0 auto;
+    display: block;
 }
 
 /* Статус бар */
@@ -85,6 +86,10 @@ body {
         user-select: none;
         touch-action: manipulation;
         box-sizing: border-box;
+        
+        /* ВАЖНО: Настройки для скрипта ресайза */
+        transform-origin: top center;
+        transition: transform 0.2s ease-out; /* Плавность при повороте экрана */
     }
     /* Стиль кнопок для скина */
     .vk-skin-btn {
