@@ -231,8 +231,8 @@ function resizeKeyboard() {
     const canvas = document.getElementById('canvas');
     
     // 1. Спрашиваем у самого контейнера его НАСТОЯЩИЙ базовый размер (теперь Flexbox его не сжимает)
-    const kbBaseWidth = vkContainer.offsetWidth;
-    const kbBaseHeight = vkContainer.offsetHeight;
+    let kbBaseWidth = vkContainer.offsetWidth;
+    let kbBaseHeight = vkContainer.offsetHeight;
 
     if (kbBaseWidth === 0 || kbBaseHeight === 0) {
         kbBaseWidth = 800;
