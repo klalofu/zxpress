@@ -234,6 +234,11 @@ function resizeKeyboard() {
     const kbBaseWidth = vkContainer.offsetWidth;
     const kbBaseHeight = vkContainer.offsetHeight;
 
+    if (kbBaseWidth === 0 || kbBaseHeight === 0) {
+        kbBaseWidth = 800;
+        kbBaseHeight = 400;
+    }
+
     console.log(kbBaseWidth, kbBaseHeight);
     // 2. Замеряем свободное место
     const canvasRect = canvas.getBoundingClientRect();
@@ -260,6 +265,8 @@ function resizeKeyboard() {
     const emptySpace = renderedHeight - kbBaseHeight;
     vkContainer.style.marginBottom = `${emptySpace}px`;
 }
+
+
 
 window.addEventListener('resize', resizeKeyboard);
 // Слушатели изменения размера окна
