@@ -229,7 +229,7 @@ body {
   background: #fff;
   float: right;
   top: 10%;
-  position: relative;
+  position: absolute;
   right: 4%;
   top: 18%;
 }
