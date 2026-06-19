@@ -234,6 +234,7 @@ function resizeKeyboard() {
     const kbBaseWidth = vkContainer.offsetWidth;
     const kbBaseHeight = vkContainer.offsetHeight;
 
+    console.log(kbBaseWidth, kbBaseHeight);
     // 2. Замеряем свободное место
     const canvasRect = canvas.getBoundingClientRect();
     const canvasBottom = canvasRect.bottom;
@@ -241,13 +242,13 @@ function resizeKeyboard() {
     // Если канвас еще не отрисовался, берем всю высоту экрана
     let availableHeight = (canvasBottom > 0) ? (window.innerHeight - canvasBottom - 10) : (window.innerHeight - 50);
     const availableWidth = window.innerWidth;
-
+    console.log(availableWidth);
     if (availableHeight < 100) availableHeight = 100;
 
     // 3. Считаем масштаб (теперь математика будет идеальной)
     const scaleByWidth = availableWidth / kbBaseWidth;
     const scaleByHeight = availableHeight / kbBaseHeight;
-
+    console.log(scaleByWidth, scaleByHeight);
     let finalScale = Math.min(scaleByWidth, scaleByHeight, 1.5);
     if (finalScale < 0.4) finalScale = 0.4;
 
