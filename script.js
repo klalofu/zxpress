@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', loadGallery);
 
 // --- 2. НАСТРОЙКА ЭМУЛЯТОРА ---
 
-// Считываем URL (делаем это здесь, чтобы проверить до запуска)
 const params = new URLSearchParams(window.location.search);
 let gameName = params.get('game');
 
@@ -51,15 +50,12 @@ var Module = {
     onReady: function() {
         console.log("USP Ready");
         
-        // ПРОВЕРКА: Загружаем игру или просто листаем?
         if (gameName) {
-            // Если в URL есть параметр ?game=...
-            // Скрываем меню, показываем эмулятор и клавиатуру
             document.querySelector('.page-header').style.display = 'none';
             document.getElementById('gallery-container').style.display = 'none';
             document.getElementById('vk-container').style.display = 'block';
             document.getElementById('canvas').style.display = 'block';
-            document.getElementById('start-overlay').style.display = 'block';
+            document.getElementById('start-overlay').style.display = 'flex';
             
             // Фокусируемся на канвасе, чтобы работали кнопки
             Module.canvas.focus();
@@ -70,7 +66,7 @@ var Module = {
             // Показываем меню и галерею, прячем эмулятор
             document.getElementById('start-overlay').style.display = 'none';
             document.querySelector('.page-header').style.display = 'block';
-            document.getElementById('gallery-container').style.display = 'grid'; // или 'block'
+            document.getElementById('gallery-container').style.display = 'grid'; 
             document.getElementById('vk-container').style.display = 'none';
             document.getElementById('canvas').style.display = 'none';
         }
@@ -82,7 +78,7 @@ var Module = {
 
 // Обработка нажатия "Назад" в браузере (если вдруг SPA)
 window.addEventListener('popstate', () => {
-    location.reload(); // Простейший способ: перезагрузить страницу
+    location.reload();
 });
 
 if (gameName) {
