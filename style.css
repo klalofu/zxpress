@@ -77,13 +77,14 @@ body {
         flex-grow: 1;
         
         /* ВАЖНО: Сохраняем пропорции картинки, чтобы кнопки не поехали */
-        aspect-ratio: 1000 / 600; /* (Ширина картинки / Высота картинки) */
+        aspect-ratio: 1 / 1; /* (Ширина картинки / Высота картинки) */
         
         background-image: url('keyboard.jpg'); /* Путь к вашему файлу */
-        background-size: 100% 100%;
+        background-size: contain;
         background-repeat: no-repeat;
         
         height: 100%;
+        width: 100%;
         user-select: none;
         touch-action: manipulation;
         box-sizing: border-box;
@@ -228,7 +229,7 @@ body {
 }
 
 #reset {
-  background-image: ('reset.png');
+  background-image: url('reset.png');
   float: right;
   top: 10%;
   position: absolute;
