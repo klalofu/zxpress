@@ -1,5 +1,4 @@
 function isMobileDevice() {
-    // Современный и самый точный способ
     if (window.matchMedia) {
         return window.matchMedia("(pointer: coarse)").matches;
     }
@@ -18,7 +17,7 @@ async function loadGallery() {
         const games = await res.json();
         const container = document.getElementById('gallery-container');
         
-        container.innerHTML = ''; // Очищаем надпись "Загрузка..."
+        container.innerHTML = '';
 
         games.forEach(game => {
             // Создаем HTML карточки
