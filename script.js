@@ -189,69 +189,6 @@ buttons.forEach(function(btn) {
     btn.addEventListener('mouseleave', releaseHandler);
 });
 
-// --- РЕСАЙЗ КЛАВИАТУРЫ ---
-function resizeKeyboard() {
-    return true;
-    const vkContainer = document.getElementById('vk-container');
-    if (!vkContainer || vkContainer.style.display === 'none') return;
-
-    const canvas = document.getElementById('canvas');
-    
-    // 1. Спрашиваем у самого контейнера его НАСТОЯЩИЙ базовый размер (теперь Flexbox его не сжимает)
-    let kbBaseWidth = vkContainer.offsetWidth;
-    let kbBaseHeight = vkContainer.offsetHeight;
-
-    if (kbBaseWidth === 0 || kbBaseHeight === 0) {
-        kbBaseWidth = 800;
-        kbBaseHeight = 400;
-    }
-
-    console.log(kbBaseWidth, kbBaseHeight);
-    // 2. Замеряем свободное место
-    const canvasRect = canvas.getBoundingClientRect();
-    const canvasBottom = canvasRect.bottom;
-    
-    // Если канвас еще не отрисовался, берем всю высоту экрана
-    let availableHeight = (canvasBottom > 0) ? (window.innerHeight - canvasBottom - 10) : (window.innerHeight - 50);
-    const availableWidth = window.innerWidth;
-    console.log(availableWidth);
-    if (availableHeight < 100) availableHeight = 100;
-
-    // 3. Считаем масштаб (теперь математика будет идеальной)
-    const scaleByWidth = availableWidth / kbBaseWidth;
-    const scaleByHeight = availableHeight / kbBaseHeight;
-    console.log(scaleByWidth, scaleByHeight);
-    let finalScale = Math.min(scaleByWidth, scaleByHeight, 1.5);
-    if (finalScale < 0.4) finalScale = 0.4;
-
-    // 4. Применяем
-    vkContainer.style.transform = `scale(${finalScale})`;
-
-    // 5. Компенсируем пустое место снизу
-    const renderedHeight = kbBaseHeight * finalScale;
-    const emptySpace = renderedHeight - kbBaseHeight;
-    vkContainer.style.marginBottom = `${emptySpace}px`;
-}
-
-
-
-window.addEventListener('resize', resizeKeyboard);
-// Слушатели изменения размера окна
-window.addEventListener('resize', resizeKeyboard);
-
-// Запускаем при загрузке
-window.addEventListener('load', resizeKeyboard);
-// Запускаем при повороте экрана или изменении размера окна
-window.addEventListener('resize', resizeKeyboard);
-// Запускаем после того, как эмулятор скрыл меню и показал клавиатуру
-// (Вызовем это в Module.onReady чуть ниже)
-
-document.getElementById('btn-reset').addEventListener('click', function(e) {
-    e.preventDefault();
-    Module.canvas.focus();
-    sendKey('F5', 'down');
-    setTimeout(() => sendKey('F5', 'up'), 50);
-});
 
 // --- 1. ГЕНЕРАЦИЯ ГАЛЕРЕИ ---
 async function loadGallery() {

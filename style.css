@@ -378,10 +378,6 @@ body.emulator-mode {
     flex-direction: column;
     text-decoration: none;
     color: #eee;
-    
-    /* ФИКСИРУЕМ ВЫСОТУ, чтобы карточки не прыгали, когда картинка загрузится */
-    aspect-ratio: 3 / 4; /* Пропорция обложки игры (можно поменять на 1 / 1 для квадратов) */
-    
     /* --- СОСТОЯНИЕ ЗАГРУЗКИ (Skeleton) --- */
     background-color: #222;
     border: 1px solid transparent; /* Рамка скрыта */
