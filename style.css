@@ -106,9 +106,7 @@ body.emulator-mode {
         user-select: none;
     }
     /* Стиль кнопок для скина */
-    .vk-skin-btn {
-        position: absolute;
-        
+    .vk-skin-btn {        
         /* Делаем кнопки полупрозрачными, чтобы видеть картинку */
         background-color: rgba(255, 255, 255, 0.1); 
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -353,4 +351,20 @@ body.emulator-mode {
     justify-content: center; /* Центрируем кнопки в ряду */
     align-items: center;
     flex: 1; /* Заставляем все ряды быть одинаковой высоты */
+}
+
+.first-row {
+    top: 45%;
+}
+
+.second-row {
+    top: 50%;
+}
+
+.third-row {
+    top: 54%;
+}
+
+.fourth-row {
+    top: 57%;
 }
