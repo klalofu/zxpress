@@ -249,9 +249,15 @@ body {
 
 @media (pointer: fine) {
     #canvas {
-        width: 100%;
-        max-width: 1000px;
-        height: 100%;
-        max-height: 60vh;
+        width: 100%;          /* Растягиваем на всю доступную ширину */
+        max-width: 1000px;    /* Но не больше 1000px */
+        
+        /* ВАЖНО: Сохраняем пропорции экрана (640 / 480 = 4 / 3) */
+        aspect-ratio: 4 / 3; 
+        
+        
+        max-height: 80vh;     /* Чтобы на очень широких мониторах не вылез за экран по высоте */
+        object-fit: contain;  /* На случай, если max-height все же ограничит */
+        flex-shrink: 0;
     }
 }
