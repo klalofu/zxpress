@@ -73,6 +73,8 @@ body {
     #vk-container {
         position: relative;
         max-width: 1920px;
+        flex-shrink: 0; 
+        flex-basis: auto;
         
         /* ВАЖНО: Сохраняем пропорции картинки, чтобы кнопки не поехали */
         aspect-ratio: 1000 / 600; /* (Ширина картинки / Высота картинки) */

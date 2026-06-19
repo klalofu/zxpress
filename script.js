@@ -223,48 +223,44 @@ buttons.forEach(function(btn) {
     btn.addEventListener('mouseleave', releaseHandler);
 });
 
-// --- РЕСАЙЗ КЛАВИАТУРЫ ПОД ОСТАВШЕЕСЯ МЕСТО ---
+// --- РЕСАЙЗ КЛАВИАТУРЫ ---
 function resizeKeyboard() {
     const vkContainer = document.getElementById('vk-container');
-    
-    // Если элемента нет или игра не запущена - выходим
-    if (!vkContainer) return;
+    if (!vkContainer || vkContainer.style.display === 'none') return;
 
     const canvas = document.getElementById('canvas');
     
-    // Базовые размеры (как в CSS)
-    const kbBaseWidth = 800;
-    const kbBaseHeight = 400;
+    // 1. Спрашиваем у самого контейнера его НАСТОЯЩИЙ базовый размер (теперь Flexbox его не сжимает)
+    const kbBaseWidth = vkContainer.offsetWidth;
+    const kbBaseHeight = vkContainer.offsetHeight;
 
-    // 1. Замеряем канвас
+    // 2. Замеряем свободное место
     const canvasRect = canvas.getBoundingClientRect();
     const canvasBottom = canvasRect.bottom;
-
-    // 2. Считаем свободное место
-    // Если canvas еще не отрисовался, берем всю высоту экрана минус отступ
+    
+    // Если канвас еще не отрисовался, берем всю высоту экрана
     let availableHeight = (canvasBottom > 0) ? (window.innerHeight - canvasBottom - 10) : (window.innerHeight - 50);
     const availableWidth = window.innerWidth;
 
-    // Защита: если места совсем нет, даем минимум
     if (availableHeight < 100) availableHeight = 100;
 
-    // 3. Считаем масштаб
+    // 3. Считаем масштаб (теперь математика будет идеальной)
     const scaleByWidth = availableWidth / kbBaseWidth;
     const scaleByHeight = availableHeight / kbBaseHeight;
 
-    // Выбираем подходящий масштаб (не больше 1.5 и не меньше 0.4)
     let finalScale = Math.min(scaleByWidth, scaleByHeight, 1.5);
     if (finalScale < 0.4) finalScale = 0.4;
 
     // 4. Применяем
     vkContainer.style.transform = `scale(${finalScale})`;
 
-    // 5. Компенсируем пустое место (чтобы не было огромного отступа снизу)
+    // 5. Компенсируем пустое место снизу
     const renderedHeight = kbBaseHeight * finalScale;
     const emptySpace = renderedHeight - kbBaseHeight;
     vkContainer.style.marginBottom = `${emptySpace}px`;
 }
 
+window.addEventListener('resize', resizeKeyboard);
 // Слушатели изменения размера окна
 window.addEventListener('resize', resizeKeyboard);
 
