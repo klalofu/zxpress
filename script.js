@@ -225,6 +225,7 @@ buttons.forEach(function(btn) {
 
 // --- РЕСАЙЗ КЛАВИАТУРЫ ---
 function resizeKeyboard() {
+    return true;
     const vkContainer = document.getElementById('vk-container');
     if (!vkContainer || vkContainer.style.display === 'none') return;
 

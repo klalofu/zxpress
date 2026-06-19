@@ -13,7 +13,6 @@ body {
     /* overflow: hidden; */
     padding-top: 20px; /* Отступ сверху */
     box-sizing: border-box;
-    gap: 20px; /* Отступ между канвасом и клавиатурой */
 }
 
 #canvas {
@@ -75,6 +74,7 @@ body {
         max-width: 1920px;
         flex-shrink: 0; 
         flex-basis: auto;
+        flex-grow: 1;
         
         /* ВАЖНО: Сохраняем пропорции картинки, чтобы кнопки не поехали */
         aspect-ratio: 1000 / 600; /* (Ширина картинки / Высота картинки) */
@@ -88,9 +88,10 @@ body {
         touch-action: manipulation;
         box-sizing: border-box;
         
-        /* ВАЖНО: Настройки для скрипта ресайза */
-        transform-origin: top center;
+        /* transform-origin: top center; */
         transition: transform 0.2s ease-out; /* Плавность при повороте экрана */
+        box-sizing: border-box;
+        user-select: none;
     }
     /* Стиль кнопок для скина */
     .vk-skin-btn {
