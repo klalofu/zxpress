@@ -7,43 +7,6 @@ function isMobileDevice() {
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
 }
 
-// --- 1. ГЕНЕРАЦИЯ ГАЛЕРЕИ --6-
-
-async function loadGallery() {
-    try {
-        const res = await fetch('games.json');
-        if (!res.ok) throw new Error("games.json не найден");
-        
-        const games = await res.json();
-        const container = document.getElementById('gallery-container');
-        
-        container.innerHTML = '';
-
-        games.forEach(game => {
-            // Создаем HTML карточки
-            const link = document.createElement('a');
-            link.href = "?game=" + game.file; // Ссылка перезагружает страницу с новым параметром
-            link.className = 'game-card';
-            
-            const img = document.createElement('img');
-            img.src = game.img;
-            img.alt = game.name;
-            img.loading = "lazy";
-
-            const title = document.createElement('div');
-            title.className = 'game-title';
-            title.innerText = game.name;
-
-            link.appendChild(img);
-            link.appendChild(title);
-            container.appendChild(link);
-        });
-
-    } catch (e) {
-        document.getElementById('gallery-container').innerHTML = "Ошибка загрузки списка игр.";
-        console.error(e);
-    }
-}
 
 // Запускаем загрузку галереи при старте
 document.addEventListener('DOMContentLoaded', loadGallery);
