@@ -132,35 +132,6 @@ body.emulator-mode {
         height: 100%;
         display: flex;
         position: relative;
-        margin-right: 3.5%;
-    }
-    .first-row {
-        top: 30%;
-        left: 4%;
-        display: flex;
-        position: relative;
-        height: 7%;
-    }
-    .second-row {
-        top: 31%;
-        left: 9%;
-        display: flex;
-        position: relative;
-        height: 9%; 
-    }
-    .third-row {
-        top: 32%;
-        left: 10%;
-        display: flex;
-        position: relative;
-        height: 8%;
-    }
-    .fourth-row {
-        top: 33%;
-        left: 6%;
-        display: flex;
-        position: relative;
-        height: 9%;
     }
     
 .vk-mod-cs { background: #533; border-color: #644; } /* Caps Shift */
