@@ -211,11 +211,11 @@ body.emulator-mode {
 #reset {
   background-image: url('reset.png');
   float: right;
-  top: 13%;
+  top: 20%;
   position: absolute;
-  right: 4%;
-  width: 5%;
-  height: 5%;
+  right: 3%;
+  width: 7%;
+  height: 7%;
   background-size: cover;
   background-repeat: no-repeat;
   border-radius: 30px;
@@ -371,4 +371,69 @@ body.emulator-mode {
 .vk-skin-btn:active, .vk-skin-btn.active {
     background-color: rgba(255, 255, 255, 0.4);
     box-shadow: 0 0 15px rgba(255,255,255,0.6);
+}
+
+.game-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: #eee;
+    
+    /* ФИКСИРУЕМ ВЫСОТУ, чтобы карточки не прыгали, когда картинка загрузится */
+    aspect-ratio: 3 / 4; /* Пропорция обложки игры (можно поменять на 1 / 1 для квадратов) */
+    
+    /* --- СОСТОЯНИЕ ЗАГРУЗКИ (Skeleton) --- */
+    background-color: #222;
+    border: 1px solid transparent; /* Рамка скрыта */
+    border-radius: 8px;
+    overflow: hidden;
+    
+    /* Анимация мерцания */
+    animation: skeleton-pulse 1.5s infinite ease-in-out;
+    transition: border-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Анимация пульсирования фона */
+@keyframes skeleton-pulse {
+    0% { background-color: #1a1a1a; }
+    50% { background-color: #2a2a2a; }
+    100% { background-color: #1a1a1a; }
+}
+
+/* --- СОСТОЯНИЕ ПОСЛЕ ЗАГРУЗКИ --- */
+.game-card.is-loaded {
+    /* Останавливаем анимацию */
+    animation: none;
+    
+    /* Показываем нормальную рамку и фон */
+    border: 1px solid #444;
+    background: #222;
+}
+
+.game-card.is-loaded:hover {
+    transform: translateY(-5px);
+    border-color: #888;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+}
+
+.game-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-bottom: 1px solid #333;
+    display: block;
+}
+
+.game-title {
+    padding: 10px;
+    font-size: 13px;
+    text-align: center;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Опускаем заголовок вниз карточки (так как у нас flex-column) */
+    margin-top: auto; 
+    background: #222; /* Фон под текстом */
 }

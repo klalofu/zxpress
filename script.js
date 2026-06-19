@@ -289,3 +289,49 @@ document.getElementById('btn-reset').addEventListener('click', function(e) {
     sendKey('F5', 'down');
     setTimeout(() => sendKey('F5', 'up'), 50);
 });
+
+// --- 1. ГЕНЕРАЦИЯ ГАЛЕРЕИ ---
+async function loadGallery() {
+    try {
+        const res = await fetch('games.json');
+        if (!res.ok) throw new Error("games.json не найден");
+        
+        const games = await res.json();
+        const container = document.getElementById('gallery-container');
+        container.innerHTML = '';
+
+        games.forEach(game => {
+            const link = document.createElement('a');
+            link.href = "?game=" + game.file;
+            link.className = 'game-card'; // Изначально без класса is-loaded (будет мерцать)
+            
+            const img = document.createElement('img');
+            img.src = game.img;
+            img.alt = game.name;
+            img.loading = "lazy";
+
+            // ДОБАВЛЕНО: Когда картинка успешно загрузилась
+            img.onload = function() {
+                link.classList.add('is-loaded'); // Добавляем класс, анимация останавливается
+            };
+
+            // ДОБАВЛЕНО: Если картинка не нашлась (ошибка 404)
+            img.onerror = function() {
+                link.classList.add('is-loaded'); // Все равно убираем анимацию
+                img.style.display = 'none'; // Прячем сломанную иконку
+            };
+
+            const title = document.createElement('div');
+            title.className = 'game-title';
+            title.innerText = game.name;
+
+            link.appendChild(img);
+            link.appendChild(title);
+            container.appendChild(link);
+        });
+
+    } catch (e) {
+        document.getElementById('gallery-container').innerHTML = "Ошибка загрузки списка игр.";
+        console.error(e);
+    }
+}
