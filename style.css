@@ -227,7 +227,7 @@ body {
 }
 
 #reset {
-  background: #fff;
+  background-image: ('reset.png');
   float: right;
   top: 10%;
   position: absolute;
