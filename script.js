@@ -70,8 +70,11 @@ var Module = {
             window.dispatchEvent(new Event('resize'));
             setTimeout(() => Module.canvas.focus(), 100);
             if (isMobileDevice()) {
-                document.getElementById('vk-container').style.display = 'block';
-                setTimeout(resizeKeyboard, 100);
+                setTimeout(function() {
+                    resizeKeyboard();
+                    // 2. Только потом показываем клавиатуру
+                    document.getElementById('vk-container').style.display = 'block';
+                }, 150); // 150мс хватит, чтобы канвас принял свой размер
             } else {
                 document.getElementById('vk-container').style.display = 'none';
             }
@@ -219,47 +222,51 @@ buttons.forEach(function(btn) {
     btn.addEventListener('touchend', releaseHandler);
     btn.addEventListener('mouseleave', releaseHandler);
 });
+
 // --- РЕСАЙЗ КЛАВИАТУРЫ ПОД ОСТАВШЕЕСЯ МЕСТО ---
 function resizeKeyboard() {
     const vkContainer = document.getElementById('vk-container');
     
-    // Если клавиатура скрыта (ПК или главное меню), ничего не делаем
-    if (!vkContainer || vkContainer.style.display === 'none') return;
+    // Если элемента нет или игра не запущена - выходим
+    if (!vkContainer) return;
 
     const canvas = document.getElementById('canvas');
     
-    // Базовые размеры клавиатуры (должны совпадать с CSS)
+    // Базовые размеры (как в CSS)
     const kbBaseWidth = 800;
     const kbBaseHeight = 400;
 
-    // 1. Узнаем, сколько места занял канвас
+    // 1. Замеряем канвас
     const canvasRect = canvas.getBoundingClientRect();
     const canvasBottom = canvasRect.bottom;
 
-    // 2. Узнаем, сколько места осталось снизу
-    const availableHeight = window.innerHeight - canvasBottom - 10; // -10px для маленького отступа
+    // 2. Считаем свободное место
+    // Если canvas еще не отрисовался, берем всю высоту экрана минус отступ
+    let availableHeight = (canvasBottom > 0) ? (window.innerHeight - canvasBottom - 10) : (window.innerHeight - 50);
     const availableWidth = window.innerWidth;
 
-    // 3. Считаем коэффициенты масштабирования
+    // Защита: если места совсем нет, даем минимум
+    if (availableHeight < 100) availableHeight = 100;
+
+    // 3. Считаем масштаб
     const scaleByWidth = availableWidth / kbBaseWidth;
     const scaleByHeight = availableHeight / kbBaseHeight;
 
-    // Выбираем наименьший масштаб, чтобы клавиатура влезла и по ширине, и по высоте
-    // Ограничиваем максимальное увеличение (x1.5), чтобы на больших планшетах не было гигантских кнопок
+    // Выбираем подходящий масштаб (не больше 1.5 и не меньше 0.4)
     let finalScale = Math.min(scaleByWidth, scaleByHeight, 1.5);
-
-    // Не уменьшаем меньше определенного предела, чтобы на крошечных экранах кнопки не стали неразличимы
     if (finalScale < 0.4) finalScale = 0.4;
 
-    // 4. Применяем трансформацию
+    // 4. Применяем
     vkContainer.style.transform = `scale(${finalScale})`;
 
-    // 5. ФИКС ЛАЙОУТА: transform не меняет физический размер элемента в документе.
-    // Поэтому мы должны уменьшить margin-bottom, чтобы убрать пустое место снизу.
+    // 5. Компенсируем пустое место (чтобы не было огромного отступа снизу)
     const renderedHeight = kbBaseHeight * finalScale;
     const emptySpace = renderedHeight - kbBaseHeight;
     vkContainer.style.marginBottom = `${emptySpace}px`;
 }
+
+// Слушатели изменения размера окна
+window.addEventListener('resize', resizeKeyboard);
 
 // Запускаем при загрузке
 window.addEventListener('load', resizeKeyboard);
