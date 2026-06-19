@@ -259,5 +259,7 @@ body {
         max-height: 80vh;     /* Чтобы на очень широких мониторах не вылез за экран по высоте */
         object-fit: contain;  /* На случай, если max-height все же ограничит */
         flex-shrink: 0;
+        margin-top: auto;
+        margin-bottom: auto;
     }
 }
