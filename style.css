@@ -394,6 +394,7 @@ body.emulator-mode {
     cursor: pointer;
     box-sizing: border-box;
     transition: background-color 0.1s;
+    height: 6%;
 }
 
 .vk-skin-btn:active, .vk-skin-btn.active {
