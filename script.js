@@ -1,5 +1,6 @@
 function isMobileDevice() {
     if (window.matchMedia) {
+        console.log('window.matchMedia so...')
         return window.matchMedia("(pointer: coarse)").matches;
     }
     // Фоллбэк для древних браузеров (через User-Agent)
@@ -114,10 +115,6 @@ overlay.addEventListener('click', function() {
         Module.SDL2.audioContext.resume();
     }
     Module.canvas.focus();
-    setTimeout(function() {
-        sendKey('F5', 'down');
-        setTimeout(() => sendKey('F5', 'up'), 50);
-    }, 500);
 });
 
 // --- 5. КЛАВИАТУРА ---

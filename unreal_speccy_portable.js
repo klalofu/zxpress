@@ -488,7 +488,7 @@ var ASM_CONSTS = {
     }, 169235: function (e) {
         return Module.canvas && (Module.canvas.style.cursor = UTF8ToString(e)), 0
     }, 169328: function () {
-        Module.canvas && (Module.canvas.style.cursor = "none")
+        Module.canvas && (Module.canvas.style.cursor = "default")
     }, 169397: function () {
         return screen.width
     }, 169422: function () {
