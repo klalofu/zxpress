@@ -18,7 +18,7 @@ export default {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: chatId,
-        text: "Жми кнопку Go для старта"
+        text: "Press Go! for start"
       })
     });
 
