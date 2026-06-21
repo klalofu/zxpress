@@ -19,3 +19,7 @@ export async function onRequestPost({ request, env }) {
 
   return new Response("ok");
 }
+
+export async function onRequest() {
+  return new Response("WORKS");
+}
