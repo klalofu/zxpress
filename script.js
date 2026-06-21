@@ -1,3 +1,4 @@
+/*
 function isMobileDevice() {
     if (window.matchMedia) {
         console.log('window.matchMedia so...')
@@ -7,7 +8,33 @@ function isMobileDevice() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
 }
+*/
+function isMobileDevice() {
+    // 1. Сначала проверяем официальное API Telegram (самый надежный способ для ТГ)
+    if (window.Telegram && window.Telegram.WebApp) {
+        const platform = window.Telegram.WebApp.platform;
+        // platform может быть: 'android', 'ios', 'web', 'tdesktop', 'macos', 'linux', 'windows'
+        if (platform === 'android' || platform === 'ios') {
+            console.log('Telegram mobile detected:', platform);
+            return true;
+        }
+    }
 
+    // 2. Фоллбэк через User-Agent (работает в 99% WebViews)
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase())) {
+        console.log('Mobile detected via UserAgent');
+        return true;
+    }
+
+    // 3. И только в самом конце — matchMedia (для обычных браузеров)
+    if (window.matchMedia) {
+        console.log('Checking matchMedia...');
+        return window.matchMedia("(pointer: coarse)").matches;
+    }
+
+    return false;
+}
 
 // Запускаем загрузку галереи при старте
 document.addEventListener('DOMContentLoaded', loadGallery);
