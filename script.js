@@ -36,7 +36,6 @@ var Module = {
             setTimeout(() => Module.canvas.focus(), 100);
             if (isMobileDevice()) {
                 setTimeout(function() {
-                    resizeKeyboard();
                     // 2. Только потом показываем клавиатуру
                     document.getElementById('vk-container').style.display = 'block';
                 }, 150); // 150мс хватит, чтобы канвас принял свой размер
