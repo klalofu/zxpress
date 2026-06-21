@@ -1,26 +1,21 @@
-export default {
-  async fetch(request, env) {
+export async function onRequestPost({ request, env }) {
 
-    const update = await request.json();
+  const update = await request.json();
 
-    if (!update.message?.chat?.id) {
-      return new Response("ok");
-    }
+  const chatId = update.message?.chat?.id;
 
-    await fetch(
-      `https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          chat_id: update.message.chat.id,
-          text: "Press Go! for start"
-        })
-      }
-    );
-
+  if (!chatId) {
     return new Response("ok");
   }
+
+  await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: "Жми кнопку Go для старта"
+    })
+  });
+
+  return new Response("ok");
 }
